@@ -1,6 +1,6 @@
 {
-  "name": "api-boilerplate",
-  "description": "boilerplate api",
+  "name": "civitas-api",
+  "description": "Civitas api",
   "version": "3.0.0",
   "main": "./src/server.js",
   "license": "MIT",
