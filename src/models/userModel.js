@@ -11,15 +11,8 @@ const UserSchema = new mongoose.Schema(
       unique: true
     },
     name: { type: String, default: '--' },
-    phone: { type: String, unique: true, default: '--' },
-    country: { type: String, default: '--' },
-    otp: {
-      type: Number,
-      required: true,
-      default: 0
-    },
-    isVerified: { type: Boolean, default: false },
-    isKycDone: { type: Boolean, default: false }
+    wallet: { type: String, unique: true },
+    isVerified: { type: Boolean, default: false }
   },
   {
     timestamps: true
