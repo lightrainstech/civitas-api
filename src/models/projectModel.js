@@ -2,6 +2,7 @@
 // External Dependencies
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
+const ObjectId = mongoose.Types.ObjectId
 
 const tokenSchema = new mongoose.Schema({
   tokenName: {
@@ -54,6 +55,12 @@ const teamSchema = new mongoose.Schema({
 
 const ProjectSchema = new mongoose.Schema(
   {
+    owner: {
+      type: ObjectId,
+      ref: 'User',
+      required: true
+    },
+    projectId: { type: String, required: true, unique: true },
     name: { type: String, default: 'NA' },
     description: {
       type: String,
