@@ -4,7 +4,11 @@ const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 const ObjectId = mongoose.Types.ObjectId
 
-const tokenSchema = new mongoose.Schema({
+const socialSchema = {
+  url: { type: String },
+  mediaType: { type: String }
+}
+const tokenSchema = {
   tokenName: {
     type: String,
     require: true
@@ -27,8 +31,8 @@ const tokenSchema = new mongoose.Schema({
       default: 'image/jpeg'
     }
   }
-})
-const teamSchema = new mongoose.Schema({
+}
+const teamSchema = {
   name: {
     type: String,
     require: true
@@ -51,7 +55,7 @@ const teamSchema = new mongoose.Schema({
       default: 'image/jpeg'
     }
   }
-})
+}
 
 const ProjectSchema = new mongoose.Schema(
   {
@@ -107,7 +111,16 @@ const ProjectSchema = new mongoose.Schema(
     roadMap: {
       type: String,
       default: 'NA'
-    }
+    },
+    whitePaper: {
+      type: String,
+      default: 'NA'
+    },
+    website: {
+      type: String,
+      default: 'NA'
+    },
+    social: [socialSchema]
   },
   {
     timestamps: true
