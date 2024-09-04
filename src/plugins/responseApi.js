@@ -38,6 +38,7 @@ module.exports = fp(function (fastify, opts, next) {
       }
       reply.status(422).send(generateResponse([], resp))
     } else {
+      console.log(error)
       resp = {
         error: true,
         statusCode: 401,

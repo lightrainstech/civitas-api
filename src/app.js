@@ -21,6 +21,11 @@ module.exports = function (fastify, opts, next) {
   fastify.register(swagger, swaggerConf.options)
   fastify.register(Etag)
 
+  fastify.register(require('@fastify/cookie'), {
+    secret: process.env.COOKIE_SECRET,
+    hook: 'onRequest'
+  })
+
   fastify.register(require('@fastify/jwt'), {
     secret: process.env.JWT_SECRET
   })
