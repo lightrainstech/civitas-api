@@ -57,6 +57,41 @@ const teamSchema = {
   }
 }
 
+const vaultSchema = {
+  name: {
+    type: String,
+    require: true
+  },
+  staked: {
+    type: String,
+    require: true
+  },
+  riskLevel: {
+    type: String,
+    default: 'NA'
+  },
+  apy: {
+    type: String,
+    default: 'NA'
+  },
+  status: {
+    type: String,
+    default: 'active',
+    enum: ['active', 'closed', 'hold']
+  },
+  tvl: { type: Number, default: 0 },
+  displayPic: {
+    path: {
+      type: String,
+      default: 'NA'
+    },
+    mimeType: {
+      type: String,
+      default: 'image/jpeg'
+    }
+  }
+}
+
 const ProjectSchema = new mongoose.Schema(
   {
     owner: {
@@ -108,6 +143,7 @@ const ProjectSchema = new mongoose.Schema(
     },
     tokenInfo: tokenSchema,
     teamInfo: [teamSchema],
+    vaultInfo: [vaultSchema],
     roadMap: {
       type: String,
       default: 'NA'
@@ -142,7 +178,7 @@ ProjectSchema.methods = {
         ...(category && { category })
       }
       const ProjectModel = mongoose.model('Project')
-      return await ProjectModel.list(criteria)
+      return await ProjectModel.list(options)
     } catch (error) {
       throw error
     }
@@ -162,7 +198,7 @@ ProjectSchema.statics = {
     const limit = parseInt(options.limit) || 12
     const select =
       options.select ||
-      'name description image chain category tvl startDate endDate status -__v'
+      'name description image chain category tvl startDate endDate status vaultInfo'
     return this.find(criteria)
       .select(select)
       .sort({ endDate: 1 })
