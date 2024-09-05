@@ -13,10 +13,11 @@ const swaggerConf = require('@configs/swagger')
 
 module.exports = function (fastify, opts, next) {
   fastify.register(cors, {
-    origin: '*',
+    origin: true,
     allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
-    maxAge: 8400
+    maxAge: 8400,
+    preflightContinue: true
   })
   fastify.register(swagger, swaggerConf.options)
   fastify.register(Etag)
