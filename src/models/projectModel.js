@@ -178,7 +178,7 @@ ProjectSchema.methods = {
         ...(category && { category })
       }
       const ProjectModel = mongoose.model('Project')
-      return await ProjectModel.list(criteria)
+      return await ProjectModel.list(options)
     } catch (error) {
       throw error
     }
@@ -198,7 +198,7 @@ ProjectSchema.statics = {
     const limit = parseInt(options.limit) || 12
     const select =
       options.select ||
-      'name description image chain category tvl startDate endDate status -__v'
+      'name description image chain category tvl startDate endDate status vaultInfo'
     return this.find(criteria)
       .select(select)
       .sort({ endDate: 1 })
