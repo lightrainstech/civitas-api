@@ -71,15 +71,17 @@ module.exports = async function (fastify, opts) {
       }
     }
   )
-  fastify.get(
-    '/me',
-    { schema: userPayload.getMeSchema, onRequest: [fastify.authenticate] },
-    async function (request, reply) {
+  fastify.get('/me', async function (request, reply) {
+    const { phone, country, otp } = request.body
+
+    if (phone === 0) {
+      reply.error({ message: 'No such user exists, please sign up.' })
+    } else {
       reply.success({
         message: 'Success'
       })
     }
-  )
+  })
 }
 
 module.exports.autoPrefix = '/user'
