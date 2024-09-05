@@ -63,9 +63,9 @@ module.exports = async function (fastify, opts) {
     fastify.get('/is_in', async function (request, reply) {
       const { thirdwebAuth } = fastify
 
-      const jwt = request.cookie?.jwt
+      const jwt = request.cookies?.jwt
 
-      console.log('jwt', request)
+      console.log('cookies', request.cookies)
 
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
 
