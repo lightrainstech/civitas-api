@@ -6,7 +6,7 @@ const userPayload = require('@payloads/userPayload.js')
 const userModal = new User()
 
 module.exports = async function (fastify, opts) {
-  fastify.post('/login1', async function (request, reply) {
+  fastify.post('/login/connect', async function (request, reply) {
     const { thirdwebAuth } = fastify
 
     const { address, chainId } = request.body
@@ -31,7 +31,7 @@ module.exports = async function (fastify, opts) {
       reply.error({ message: 'User already exists, please login.' })
     }
   }),
-    fastify.post('/login', async function (request, reply) {
+    fastify.post('/login/verify', async function (request, reply) {
       const { thirdwebAuth } = fastify
 
       const { payload, signature } = request.body
@@ -72,16 +72,7 @@ module.exports = async function (fastify, opts) {
       reply.success({
         message: 'Success'
       })
-    }),
-    fastify.get(
-      '/me',
-      { schema: userPayload.getMeSchema, onRequest: [fastify.authenticate] },
-      async function (request, reply) {
-        reply.success({
-          message: 'Success'
-        })
-      }
-    )
+    })
 }
 
 module.exports.autoPrefix = '/twuser'

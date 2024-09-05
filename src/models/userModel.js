@@ -5,13 +5,12 @@ const uniqueValidator = require('mongoose-unique-validator')
 
 const UserSchema = new mongoose.Schema(
   {
-    email: {
+    userIdRef: {
       type: String,
       required: true,
       unique: true
     },
     name: { type: String, default: '--' },
-    wallet: { type: String, unique: true },
     isVerified: { type: Boolean, default: false }
   },
   {
@@ -28,44 +27,19 @@ UserSchema.methods = {
     }
     return User.load(options)
   },
-  getUserByEmail: async function (email) {
+  getUserByuserIdRef: async function (userIdRef) {
     const User = mongoose.model('User')
-    let query = { email }
+    let query = { userIdRef }
     const options = {
       criteria: query
     }
     return User.load(options)
-  },
-  resetOtp: async function (otp, phone, country) {
-    const User = mongoose.model('User')
-    return await User.findOneAndUpdate(
-      { phone: phone, country: country },
-      {
-        $set: {
-          otp: otp
-        }
-      },
-      { new: true }
-    )
-  },
-  verifyOtp: async function (otp, phone, country) {
-    const User = mongoose.model('User')
-    return await User.findOneAndUpdate(
-      { phone: phone, country: country, otp: otp, isVerified: false },
-      {
-        $set: {
-          otp: 0,
-          isVerified: true
-        }
-      },
-      { new: true }
-    )
   }
 }
 
 UserSchema.statics = {
   load: function (options, cb) {
-    options.select = options.select || 'email name'
+    options.select = options.select || 'userIdRef name'
     return this.findOne(options.criteria).select(options.select).exec(cb)
   },
 
@@ -73,7 +47,7 @@ UserSchema.statics = {
     const criteria = options.criteria || {}
     const page = options.page - 1
     const limit = parseInt(options.limit) || 12
-    const select = options.select || 'email name createdAt -__v'
+    const select = options.select || 'userIdRef name createdAt -__v'
     return this.find(criteria)
       .select(select)
       .sort({ createdAt: -1 })
@@ -86,8 +60,7 @@ UserSchema.statics = {
 
 UserSchema.index(
   {
-    phone: 1,
-    country: 1
+    userIdRef: 1
   },
   { unique: true }
 )
