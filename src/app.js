@@ -14,7 +14,7 @@ const swaggerConf = require('@configs/swagger')
 module.exports = function (fastify, opts, next) {
   fastify.register(cors, {
     origin: '*',
-    allowedHeaders: ['Authorization', 'Content-Type'],
+    allowedHeaders: ['Authorization', 'Content-Type', 'Accept'],
     credentials: true,
     maxAge: 8400
   })
