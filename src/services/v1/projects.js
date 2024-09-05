@@ -20,6 +20,8 @@ module.exports = async function (fastify, opts) {
     try {
       const data = request.body
 
+      remove(data.vaultInfo)
+
       // Recursive function to filter out empty or undefined fields
       function cleanData(input) {
         if (Array.isArray(input)) {

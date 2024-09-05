@@ -38,6 +38,10 @@ module.exports = function (fastify, opts, next) {
     dir: path.join(__dirname, 'services/v1/'),
     options: Object.assign({ prefix: '/api/v1' }, opts)
   })
+  fastify.register(autoload, {
+    dir: path.join(__dirname, 'services/admin/'),
+    options: Object.assign({ prefix: '/api/v1/admin' }, opts)
+  })
 
   fastify.decorate('authenticate', async function (request, reply) {
     try {

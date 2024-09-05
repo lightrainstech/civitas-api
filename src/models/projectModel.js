@@ -57,6 +57,41 @@ const teamSchema = {
   }
 }
 
+const vaultSchema = {
+  name: {
+    type: String,
+    require: true
+  },
+  staked: {
+    type: String,
+    require: true
+  },
+  riskLevel: {
+    type: String,
+    default: 'NA'
+  },
+  apy: {
+    type: String,
+    default: 'NA'
+  },
+  status: {
+    type: String,
+    default: 'active',
+    enum: ['active', 'closed', 'hold']
+  },
+  tvl: { type: Number, default: 0 },
+  displayPic: {
+    path: {
+      type: String,
+      default: 'NA'
+    },
+    mimeType: {
+      type: String,
+      default: 'image/jpeg'
+    }
+  }
+}
+
 const ProjectSchema = new mongoose.Schema(
   {
     owner: {
@@ -108,6 +143,7 @@ const ProjectSchema = new mongoose.Schema(
     },
     tokenInfo: tokenSchema,
     teamInfo: [teamSchema],
+    vaultInfo: [vaultSchema],
     roadMap: {
       type: String,
       default: 'NA'
