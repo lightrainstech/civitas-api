@@ -47,11 +47,18 @@ module.exports = async function (fastify, opts) {
           const jwt = await thirdwebAuth.generateJWT({
             payload: verifiedPayload.payload
           })
-          reply.setCookie('jwt', jwt)
-          reply.success({
-            message: 'Sign up successful!',
-            token: jwt
-          })
+          reply
+            .setCookie('jwt', jwt, {
+              path: '/',
+              httpOnly: true,
+              sameSite: true,
+              maxAge: '604800',
+              overwrite: true
+            })
+            .success({
+              message: 'Sign up successful!',
+              token: jwt
+            })
         } else {
           reply.error({ message: 'Signature missmatch!' })
         }
