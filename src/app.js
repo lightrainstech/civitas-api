@@ -7,6 +7,7 @@ const swagger = require('@fastify/swagger')
 
 const Etag = require('@fastify/etag')
 const cors = require('@fastify/cors')
+const fastifyMultipart = require('@fastify/multipart')
 
 // Import Swagger Options
 const swaggerConf = require('@configs/swagger')
@@ -21,6 +22,7 @@ module.exports = function (fastify, opts, next) {
   })
   fastify.register(swagger, swaggerConf.options)
   fastify.register(Etag)
+  fastify.register(fastifyMultipart)
 
   fastify.register(require('@fastify/cookie'), {
     secret: process.env.COOKIE_SECRET,
