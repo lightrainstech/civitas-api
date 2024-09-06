@@ -26,6 +26,8 @@ module.exports = fp(function (fastify, opts, next) {
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
+    console.log(error)
+
     let resp
     if (error.validation) {
       resp = {
@@ -38,7 +40,6 @@ module.exports = fp(function (fastify, opts, next) {
       }
       reply.status(422).send(generateResponse([], resp))
     } else {
-      console.log(error)
       resp = {
         error: true,
         statusCode: 401,
