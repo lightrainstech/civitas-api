@@ -45,12 +45,5 @@ module.exports = function (fastify, opts, next) {
     options: Object.assign({ prefix: '/api/v1/admin' }, opts)
   })
 
-  fastify.decorate('authenticate', async function (request, reply) {
-    try {
-      await request.jwtVerify()
-    } catch (err) {
-      reply.send(err)
-    }
-  })
   next()
 }
