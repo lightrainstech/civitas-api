@@ -57,5 +57,23 @@ module.exports = async function (fastify, opts) {
         }
         return reply
       }
+    ),
+    fastify.get(
+      '/projects/detail/:projectId',
+      {},
+      async function (request, reply) {
+        const { projectId } = request.params
+        const projectModel = new Project()
+        try {
+          const projects = await projectModel.getProjectDetails(projectId)
+          reply.success({
+            message: 'Project created successfully',
+            data: projects
+          })
+        } catch (error) {
+          console.log(error)
+        }
+        return reply
+      }
     )
 }
