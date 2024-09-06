@@ -33,7 +33,7 @@ module.exports = async function (fastify, opts) {
           let formData = await request.file(),
             mimeType = formData.mimetype,
             fileName = formData.filename.replace(/[^a-zA-Z0-9.]/g, ''),
-            filePath = `${process.cwd()}/public/images/${Date.now()}${fileName}`
+            filePath = `${process.cwd()}/src/public/images/${Date.now()}${fileName}`
           pipeline(formData.file, fs.createWriteStream(filePath), async err => {
             if (err) {
               reply.error(err)
