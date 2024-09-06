@@ -182,6 +182,14 @@ ProjectSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  getProjectDetails: async function (projectId) {
+    try {
+      const ProjectModel = mongoose.model('Project')
+      return await ProjectModel.findOne({ projectId })
+    } catch (error) {
+      throw error
+    }
   }
 }
 
@@ -198,7 +206,7 @@ ProjectSchema.statics = {
     const limit = parseInt(options.limit) || 12
     const select =
       options.select ||
-      'name description image chain category tvl startDate endDate status vaultInfo'
+      'projectId name description image chain category tvl startDate endDate status vaultInfo'
     return this.find(criteria)
       .select(select)
       .sort({ endDate: 1 })
