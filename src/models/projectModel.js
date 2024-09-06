@@ -204,16 +204,19 @@ ProjectSchema.statics = {
     const criteria = options.criteria || {}
     const page = options.page === 0 ? 0 : options.page - 1
     const limit = parseInt(options.limit) || 12
-    const select =
-      options.select ||
-      'projectId name description image chain category tvl startDate endDate status vaultInfo'
-    return this.find(criteria)
-      .select(select)
+    const select = options.select || '' // Return all fields if select is empty
+
+    const query = this.find(criteria)
       .sort({ endDate: 1 })
       .limit(limit)
       .skip(limit * page)
       .lean()
-      .exec()
+
+    if (select) {
+      query.select(select)
+    }
+
+    return query.exec()
   }
 }
 
