@@ -22,7 +22,7 @@ module.exports = async function (fastify, opts) {
     return reply
   }),
     fastify.post(
-      '/projects/image/upload/:fileType',
+      '/projects/image/upload/:project/:fileType',
       {},
       async function (request, reply) {
         try {
