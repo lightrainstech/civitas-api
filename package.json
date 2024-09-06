@@ -1,7 +1,7 @@
 {
   "name": "civitas-api",
   "description": "Civitas api",
-  "version": "5.1.14",
+  "version": "5.1.15",
   "main": "./src/server.js",
   "license": "MIT",
   "dependencies": {
