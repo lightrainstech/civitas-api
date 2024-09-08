@@ -70,4 +70,23 @@ module.exports = async function (fastify, opts) {
       })
     }
   })
+
+  fastify.get('/projects', async function (request, reply) {
+    try {
+      const { user } = request
+
+      // Get projectData into the database
+      const project = new Project()
+      const savedProject = await project.getProjectsOwned(user.sub)
+      reply.success({
+        message: 'Project created successfully',
+        projects: savedProject
+      })
+    } catch (err) {
+      reply.error({
+        message: 'Failed to create project',
+        error: err.message
+      })
+    }
+  })
 }

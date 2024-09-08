@@ -189,6 +189,14 @@ ProjectSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  getProjectsOwned: async function (owner) {
+    try {
+      const ProjectModel = mongoose.model('Project')
+      return await ProjectModel.find({ owner })
+    } catch (error) {
+      throw error
+    }
   }
 }
 
