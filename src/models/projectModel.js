@@ -95,8 +95,7 @@ const vaultSchema = {
 const ProjectSchema = new mongoose.Schema(
   {
     owner: {
-      type: ObjectId,
-      ref: 'User',
+      type: String,
       required: true
     },
     projectId: { type: String, required: true, unique: true },
@@ -219,5 +218,9 @@ ProjectSchema.statics = {
     return query.exec()
   }
 }
+
+ProjectSchema.index({
+  owner: 1
+})
 
 module.exports = mongoose.model('Project', ProjectSchema)
