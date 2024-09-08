@@ -62,6 +62,10 @@ const vaultSchema = {
     type: String,
     require: true
   },
+  wallet: {
+    type: String,
+    require: true
+  },
   staked: {
     type: String,
     require: true
