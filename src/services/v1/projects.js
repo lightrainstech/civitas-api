@@ -2,25 +2,32 @@
 const Project = require('@models/projectModel.js')
 
 module.exports = async function (fastify, opts) {
-  // fastify.addHook('onRequest', async (request, reply) => {
-  //   try {
-  //     const { thirdwebAuth } = fastify
-  //     const jwt = request.headers?.authorization
-  //     const authResult = await thirdwebAuth.verifyJWT({ jwt })
-  //     console.log('authResult', authResult)
-  //     if (!authResult.valid) {
-  //       reply.error({ message: 'Failure' })
-  //     }
-  //   } catch (err) {
-  //     reply.error(err)
-  //   }
-  // })
+  fastify.addHook('onRequest', async (request, reply) => {
+    try {
+      const { thirdwebAuth } = fastify
+      const jwt = request.headers?.authorization
+      const authResult = await thirdwebAuth.verifyJWT({ jwt })
+      if (!authResult.valid) {
+        reply.error({ message: 'Failure' })
+      }
+      request.log.info('Token Valid')
+      request.user = authResult.parsedJWT
+    } catch (err) {
+      console.log(err)
+      reply.error(err)
+    }
+  })
 
   fastify.post('/projects', async function (request, reply) {
     try {
       const data = request.body
+      const { user } = request
 
       delete data.vaultInfo
+
+      data.userIdRef = user.nonce
+      data.wallet = user.sub
+      data.owner = user.sub
 
       // Recursive function to filter out empty or undefined fields
       function cleanData(input) {
@@ -55,6 +62,25 @@ module.exports = async function (fastify, opts) {
       reply.success({
         message: 'Project created successfully',
         data: savedProject
+      })
+    } catch (err) {
+      reply.error({
+        message: 'Failed to create project',
+        error: err.message
+      })
+    }
+  })
+
+  fastify.get('/projects', async function (request, reply) {
+    try {
+      const { user } = request
+
+      // Get projectData into the database
+      const project = new Project()
+      const savedProject = await project.getProjectsOwned(user.sub)
+      reply.success({
+        message: 'Project created successfully',
+        projects: savedProject
       })
     } catch (err) {
       reply.error({
