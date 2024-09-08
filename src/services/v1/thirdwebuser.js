@@ -3,7 +3,6 @@ require('dotenv').config()
 
 const User = require('@models/userModel.js')
 const userPayload = require('@payloads/userPayload.js')
-const userModal = new User()
 
 module.exports = async function (fastify, opts) {
   fastify.post('/login/connect', async function (request, reply) {
@@ -33,16 +32,23 @@ module.exports = async function (fastify, opts) {
   }),
     fastify.post('/login/verify', async function (request, reply) {
       const { thirdwebAuth } = fastify
+      const userModal = new User()
 
       const { payload, signature } = request.body
-      // const user = await userModal.getUserByEmail(address)
       if (!payload || !signature) {
         reply.error({ message: 'Payload is required' })
       }
 
       try {
         const verifiedPayload = await thirdwebAuth.verifyPayload(request.body)
-
+        const user = await userModal.getUserByWalet(payload.address)
+        if (user === null) {
+          await User.create({
+            wallet: payload.address,
+            isVerified: true,
+            userIdRef: payload.nonce
+          })
+        }
         if (verifiedPayload.valid) {
           const jwt = await thirdwebAuth.generateJWT({
             payload: verifiedPayload.payload
@@ -72,15 +78,17 @@ module.exports = async function (fastify, opts) {
 
       const jwt = request.headers?.authorization
 
-      console.log('headers', request.headers)
-
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
+      console.log('wallet', authResult.parsedJWT.sub)
+
+      // authResult.parsedJWT.sub
 
       if (!authResult.valid) {
-        reply.error({ message: 'Failure', authResult })
+        reply.error({ message: authResult.error })
       }
       reply.success({
-        message: 'Success'
+        message: 'Success',
+        authResult
       })
     })
 }

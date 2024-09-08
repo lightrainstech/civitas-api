@@ -10,6 +10,10 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
+    wallet: {
+      type: String,
+      unique: true
+    },
     name: { type: String, default: '--' },
     isVerified: { type: Boolean, default: false }
   },
@@ -34,12 +38,20 @@ UserSchema.methods = {
       criteria: query
     }
     return User.load(options)
+  },
+  getUserByWalet: async function (wallet) {
+    const User = mongoose.model('User')
+    let query = { wallet }
+    const options = {
+      criteria: query
+    }
+    return User.load(options)
   }
 }
 
 UserSchema.statics = {
   load: function (options, cb) {
-    options.select = options.select || 'userIdRef name'
+    options.select = options.select || 'userIdRef wallet name isVerified'
     return this.findOne(options.criteria).select(options.select).exec(cb)
   },
 
