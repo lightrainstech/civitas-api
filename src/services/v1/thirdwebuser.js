@@ -44,9 +44,9 @@ module.exports = async function (fastify, opts) {
         const user = await userModal.getUserByWalet(payload.address)
 
         console.log('user', user)
-
+        let newUsr = {}
         if (user === null) {
-          await User.create({
+          newUsr = await User.create({
             wallet: payload.address,
             isVerified: true,
             userIdRef: payload.nonce
@@ -66,7 +66,8 @@ module.exports = async function (fastify, opts) {
             })
             .success({
               message: 'Sign up successful!',
-              token: jwt
+              token: jwt,
+              newUsr: newUsr
             })
         } else {
           reply.error({ message: 'Signature missmatch!' })
