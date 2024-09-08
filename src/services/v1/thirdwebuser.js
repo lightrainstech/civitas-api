@@ -42,8 +42,11 @@ module.exports = async function (fastify, opts) {
       try {
         const verifiedPayload = await thirdwebAuth.verifyPayload(request.body)
         const user = await userModal.getUserByWalet(payload.address)
+
+        console.log('user', user)
+        let newUsr = {}
         if (user === null) {
-          await User.create({
+          newUsr = await User.create({
             wallet: payload.address,
             isVerified: true,
             userIdRef: payload.nonce
@@ -63,7 +66,8 @@ module.exports = async function (fastify, opts) {
             })
             .success({
               message: 'Sign up successful!',
-              token: jwt
+              token: jwt,
+              newUsr: newUsr
             })
         } else {
           reply.error({ message: 'Signature missmatch!' })
@@ -81,6 +85,9 @@ module.exports = async function (fastify, opts) {
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
       console.log('wallet', authResult.parsedJWT.sub)
 
+      const userModal = new User()
+      const user = await userModal.getUserByWalet(authResult.parsedJWT.sub)
+
       // authResult.parsedJWT.sub
 
       if (!authResult.valid) {
@@ -88,7 +95,8 @@ module.exports = async function (fastify, opts) {
       }
       reply.success({
         message: 'Success',
-        authResult
+        authResult,
+        user: user || {}
       })
     })
 }
