@@ -19,7 +19,8 @@ const tokenSchema = {
   },
   tokenAddress: {
     type: String,
-    require: true
+    require: false,
+    default: 'NA'
   },
   tokenGenDate: {
     type: Date,
