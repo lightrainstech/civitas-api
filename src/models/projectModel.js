@@ -17,6 +17,10 @@ const tokenSchema = {
     type: String,
     require: true
   },
+  tokenAddress: {
+    type: String,
+    require: true
+  },
   tokenGenDate: {
     type: Date,
     require: true
