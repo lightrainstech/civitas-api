@@ -71,6 +71,9 @@ const vaultSchema = {
     type: String,
     require: true
   },
+  depositTokenDecimals: {
+    type: Number
+  },
   vaultAddress: {
     type: String,
     require: true
