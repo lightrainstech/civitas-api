@@ -67,7 +67,11 @@ const vaultSchema = {
     type: String,
     require: true
   },
-  wallet: {
+  depositTokenAddress: {
+    type: String,
+    require: true
+  },
+  vaultAddress: {
     type: String,
     require: true
   },
