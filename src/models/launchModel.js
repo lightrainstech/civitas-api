@@ -2,6 +2,7 @@
 // External Dependencies
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
+const uniqueValidator = require('mongoose-unique-validator')
 
 const LaunchSchema = new mongoose.Schema(
   {
@@ -154,5 +155,6 @@ LaunchSchema.index({
   startDate: 1,
   endDate: 1
 })
+LaunchSchema.plugin(uniqueValidator)
 
 module.exports = mongoose.model('Launch', LaunchSchema)

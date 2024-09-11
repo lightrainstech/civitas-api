@@ -70,12 +70,7 @@ UserSchema.statics = {
   }
 }
 
-UserSchema.index(
-  {
-    userIdRef: 1
-  },
-  { unique: true }
-)
+UserSchema.index({ userIdRef: 1 }, { wallet: 1 }, { unique: true })
 
 UserSchema.plugin(uniqueValidator)
 
