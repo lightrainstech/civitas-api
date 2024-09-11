@@ -104,9 +104,11 @@ module.exports = async function (fastify, opts) {
       const currentUser = authResult.parsedJWT
 
       const { name, profileImage } = request.body
-      const { wallet } = currentUser
+      const { sub } = currentUser
 
-      if (!wallet) {
+      console.log('currentUser', currentUser)
+
+      if (!sub) {
         return reply.error({ message: 'Faild to authenticate' })
       }
 
