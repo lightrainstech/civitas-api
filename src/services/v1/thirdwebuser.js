@@ -114,7 +114,7 @@ module.exports = async function (fastify, opts) {
 
       try {
         const userModal = new User()
-        const user = await userModal.updateUser(wallet, { name, profileImage })
+        const user = await userModal.updateUser(sub, { name, profileImage })
         if (!user) {
           reply.error({ message: 'Failed to update' })
         }
