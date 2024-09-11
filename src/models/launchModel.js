@@ -10,11 +10,31 @@ const LaunchSchema = new mongoose.Schema(
       required: false
     },
     name: { type: String, default: 'NA' },
-    projectId: { type: String },
+    projectId: { type: String, default: 'NA' },
     launchId: { type: String, required: true, unique: true },
     description: {
       type: String,
       default: 'NA'
+    },
+    tokenName: {
+      type: String,
+      required: true
+    },
+    tokenSymbol: {
+      type: String,
+      required: true
+    },
+    tokenAddress: {
+      type: String,
+      required: true
+    },
+    softCap: {
+      type: Number,
+      required: true
+    },
+    hardCap: {
+      type: Number,
+      required: true
     },
     launchLogo: {
       path: {
@@ -37,12 +57,8 @@ const LaunchSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'active',
-      enum: ['active', 'closed', 'hold']
-    },
-    whitePaper: {
-      type: String,
-      default: 'NA'
+      default: 'upcoming',
+      enum: ['upcoming', 'active', 'closed', 'hold']
     },
     website: {
       type: String,
@@ -84,7 +100,7 @@ LaunchSchema.methods = {
       throw error
     }
   },
-  getLaunchesOwned: async function (owner) {
+  getLaunchsOwned: async function (owner) {
     try {
       const LaunchModel = mongoose.model('Launch')
       return await LaunchModel.find({ owner })
