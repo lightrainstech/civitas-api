@@ -84,7 +84,7 @@ const vaultSchema = {
   },
   riskLevel: {
     type: String,
-    default: 'NA'
+    enum: ['low', 'medium', 'high']
   },
   apy: {
     type: String,
