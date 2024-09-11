@@ -15,7 +15,17 @@ const UserSchema = new mongoose.Schema(
       unique: true
     },
     name: { type: String, default: '--' },
-    isVerified: { type: Boolean, default: false }
+    isVerified: { type: Boolean, default: false },
+    profileImage: {
+      path: {
+        type: String,
+        default: 'NA'
+      },
+      mimeType: {
+        type: String,
+        default: 'image/jpeg'
+      }
+    }
   },
   {
     timestamps: true
@@ -46,6 +56,14 @@ UserSchema.methods = {
       criteria: query
     }
     return User.load(options)
+  },
+  updateUser: async function (wallet, updates) {
+    const User = mongoose.model('User')
+    return await User.findOneAndUpdate(
+      { wallet },
+      { $set: updates },
+      { new: true, runValidators: true }
+    )
   }
 }
 
@@ -70,12 +88,7 @@ UserSchema.statics = {
   }
 }
 
-UserSchema.index(
-  {
-    userIdRef: 1
-  },
-  { unique: true }
-)
+UserSchema.index({ userIdRef: 1 }, { wallet: 1 }, { unique: true })
 
 UserSchema.plugin(uniqueValidator)
 

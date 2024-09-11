@@ -43,7 +43,6 @@ module.exports = async function (fastify, opts) {
         const verifiedPayload = await thirdwebAuth.verifyPayload(request.body)
         const user = await userModal.getUserByWalet(payload.address)
 
-        console.log('user', user)
         let newUsr = {}
         if (user === null) {
           newUsr = await User.create({
@@ -79,16 +78,10 @@ module.exports = async function (fastify, opts) {
     }),
     fastify.get('/is_in', async function (request, reply) {
       const { thirdwebAuth } = fastify
-
       const jwt = request.headers?.authorization
-
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
-      console.log('wallet', authResult.parsedJWT.sub)
-
       const userModal = new User()
       const user = await userModal.getUserByWalet(authResult.parsedJWT.sub)
-
-      // authResult.parsedJWT.sub
 
       if (!authResult.valid) {
         reply.error({ message: authResult.error })
@@ -98,6 +91,37 @@ module.exports = async function (fastify, opts) {
         authResult,
         user: user || {}
       })
+    }),
+    fastify.patch('/me', async function (request, reply) {
+      const jwt = request.headers?.authorization
+      const authResult = await thirdwebAuth.verifyJWT({ jwt })
+
+      if (!authResult.valid) {
+        reply.error({ message: 'Faild to authenticate' })
+      }
+      const currentUser = authResult.parsedJWT
+
+      const { name, profileImage } = request.body
+      const { wallet } = currentUser
+
+      if (!wallet) {
+        return reply.error({ message: 'Faild to authenticate' })
+      }
+
+      try {
+        const userModal = new User()
+        const user = await userModal.updateUser(wallet, { name, profileImage })
+        if (!user) {
+          reply.error({ message: 'Failed to update' })
+        }
+        reply.success({
+          message: 'Edit successfull',
+          res
+        })
+      } catch (error) {
+        console.log(error)
+        reply.error({ message: 'Unknown error.' })
+      }
     })
 }
 
