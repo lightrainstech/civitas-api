@@ -13,10 +13,6 @@ const LaunchSchema = new mongoose.Schema(
     name: { type: String, default: 'NA' },
     projectId: { type: String, default: 'NA' },
     launchId: { type: String, required: true, unique: true },
-    description: {
-      type: String,
-      default: 'NA'
-    },
     tokenName: {
       type: String,
       required: true
