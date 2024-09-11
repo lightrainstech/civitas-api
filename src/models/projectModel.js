@@ -213,6 +213,14 @@ ProjectSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  updatedProject: async function (projectId, cleanedUpdates) {
+    const ProjectModel = mongoose.model('Project')
+    return await ProjectModel.findOneAndUpdate(
+      { projectId },
+      { $set: cleanedUpdates },
+      { new: true, runValidators: true }
+    )
   }
 }
 

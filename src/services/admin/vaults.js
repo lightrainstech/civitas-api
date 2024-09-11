@@ -1,7 +1,17 @@
 'use strict'
 const Project = require('@models/projectModel.js')
+require('dotenv').config()
 
 module.exports = async function (fastify, opts) {
+  fastify.addHook('onRequest', async (request, reply) => {
+    if (
+      !request.headers['x-admin-key'] ||
+      request.headers['x-admin-key'] !== process.env.ADMIN_AUTH_KEY
+    ) {
+      reply.error({ message: 'Failed to authenticate' })
+    }
+  })
+
   fastify.post('/projects/:projectId/vaults', async function (request, reply) {
     try {
       const { projectId } = request.params

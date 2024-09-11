@@ -88,5 +88,65 @@ module.exports = async function (fastify, opts) {
         error: err.message
       })
     }
-  })
+  }),
+    fastify.patch('/projects/:projectId', async function (request, reply) {
+      try {
+        const { projectId } = request.params
+        const updates = request.body
+
+        const allowedFields = [
+          'name',
+          'description',
+          'status',
+          'projectLogo',
+          'projectBanner',
+          'teamInfo',
+          'tokenInfo',
+          'roadMap',
+          'whitePaper',
+          'website'
+        ]
+
+        function filterAllowedFields(input) {
+          const filteredObject = {}
+          Object.keys(input).forEach(key => {
+            if (
+              input[key] !== undefined &&
+              input[key] !== null &&
+              input[key] !== '' &&
+              allowedFields.includes(key) // Only include allowed fields
+            ) {
+              filteredObject[key] = input[key]
+            }
+          })
+          return filteredObject
+        }
+
+        const filteredUpdates = filterAllowedFields(updates)
+
+        if (Object.keys(filteredUpdates).length === 0) {
+          return reply.error({ message: 'No valid fields to update' })
+        }
+
+        // Find the project and update it with the cleaned data
+        const updatedProject = await Project.updatedProject(
+          projectId,
+          filteredUpdates
+        )
+
+        if (!updatedProject) {
+          return reply.error({ message: 'Project not found' })
+        }
+
+        reply.success({
+          message: 'Project updated successfully',
+          data: updatedProject
+        })
+      } catch (err) {
+        reply.error({
+          message: 'Failed to update project',
+          error: err.message
+        })
+      }
+    })
 }

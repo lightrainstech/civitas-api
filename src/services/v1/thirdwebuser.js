@@ -98,6 +98,37 @@ module.exports = async function (fastify, opts) {
         authResult,
         user: user || {}
       })
+    }),
+    fastify.patch('/me', async function (request, reply) {
+      const jwt = request.headers?.authorization
+      const authResult = await thirdwebAuth.verifyJWT({ jwt })
+
+      if (!authResult.valid) {
+        reply.error({ message: 'Faild to authenticate' })
+      }
+      const currentUser = authResult.parsedJWT
+
+      const { name, profileImage } = request.body
+      const { wallet } = currentUser
+
+      if (!wallet) {
+        return reply.error({ message: 'Faild to authenticate' })
+      }
+
+      try {
+        const userModal = new User()
+        const user = await userModal.updateUser(wallet, { name, profileImage })
+        if (!user) {
+          reply.error({ message: 'Failed to update' })
+        }
+        reply.success({
+          message: 'Edit successfull',
+          res
+        })
+      } catch (error) {
+        console.log(error)
+        reply.error({ message: 'Unknown error.' })
+      }
     })
 }
 
