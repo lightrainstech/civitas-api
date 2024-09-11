@@ -43,7 +43,6 @@ module.exports = async function (fastify, opts) {
         const verifiedPayload = await thirdwebAuth.verifyPayload(request.body)
         const user = await userModal.getUserByWalet(payload.address)
 
-        console.log('user', user)
         let newUsr = {}
         if (user === null) {
           newUsr = await User.create({
@@ -79,16 +78,10 @@ module.exports = async function (fastify, opts) {
     }),
     fastify.get('/is_in', async function (request, reply) {
       const { thirdwebAuth } = fastify
-
       const jwt = request.headers?.authorization
-
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
-      console.log('wallet', authResult.parsedJWT.sub)
-
       const userModal = new User()
       const user = await userModal.getUserByWalet(authResult.parsedJWT.sub)
-
-      // authResult.parsedJWT.sub
 
       if (!authResult.valid) {
         reply.error({ message: authResult.error })
@@ -100,6 +93,8 @@ module.exports = async function (fastify, opts) {
       })
     }),
     fastify.patch('/me', async function (request, reply) {
+      const { thirdwebAuth } = fastify
+
       const jwt = request.headers?.authorization
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
 

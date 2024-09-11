@@ -88,7 +88,7 @@ module.exports = async function (fastify, opts) {
           page
         })
         reply.success({
-          message: 'Luunches list success',
+          message: 'Launches list success',
           data: launches
         })
       } catch (error) {
