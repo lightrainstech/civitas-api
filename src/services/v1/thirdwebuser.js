@@ -93,6 +93,8 @@ module.exports = async function (fastify, opts) {
       })
     }),
     fastify.patch('/me', async function (request, reply) {
+      const { thirdwebAuth } = fastify
+
       const jwt = request.headers?.authorization
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
 
