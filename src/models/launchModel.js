@@ -61,6 +61,10 @@ const LaunchSchema = new mongoose.Schema(
       default: 'upcoming',
       enum: ['upcoming', 'active', 'closed', 'hold']
     },
+    progress: {
+      type: Number,
+      default: 0
+    },
     website: {
       type: String,
       default: 'NA'
