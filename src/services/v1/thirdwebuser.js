@@ -11,6 +11,8 @@ module.exports = async function (fastify, opts) {
     const { address, chainId } = request.body
     // const user = await userModal.getUserByEmail(address)
 
+    console.log(request.body)
+
     if (!address) {
       return res.status(400).send('Address is required')
     }
@@ -22,7 +24,7 @@ module.exports = async function (fastify, opts) {
       })
 
       reply.success({
-        message: 'Sign up successful, please verify your phone number.',
+        message: 'Sign up successful',
         res
       })
     } catch (error) {
@@ -106,21 +108,19 @@ module.exports = async function (fastify, opts) {
       const { name, profileImage } = request.body
       const { sub } = currentUser
 
-      console.log('currentUser', currentUser)
-
       if (!sub) {
         return reply.error({ message: 'Faild to authenticate' })
       }
 
       try {
         const userModal = new User()
-        const user = await userModal.updateUser(wallet, { name, profileImage })
+        const user = await userModal.updateUser(sub, { name, profileImage })
         if (!user) {
           reply.error({ message: 'Failed to update' })
         }
         reply.success({
           message: 'Edit successfull',
-          res
+          user
         })
       } catch (error) {
         console.log(error)

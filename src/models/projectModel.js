@@ -168,7 +168,8 @@ const ProjectSchema = new mongoose.Schema(
       type: String,
       default: 'NA'
     },
-    social: [socialSchema]
+    social: [socialSchema],
+    isLaunched: { type: Boolean, default: false }
   },
   {
     timestamps: true
