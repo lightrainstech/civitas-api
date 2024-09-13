@@ -16,8 +16,13 @@ jobTypes.forEach(type => {
 
 if (jobTypes.length) {
   agenda.start()
+  agenda.every('60 minutes', 'Update:StakeInfo', {
+    uId: 'CALLIN60'
+  })
+  console.log('Defined')
 }
 
+async function main() {}
 // Handle unhandled rejections globally
 process.on('unhandledRejection', error => {
   console.error('Unhandled Rejection:', error)
