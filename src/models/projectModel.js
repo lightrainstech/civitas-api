@@ -78,10 +78,6 @@ const vaultSchema = {
     type: String,
     require: true
   },
-  staked: {
-    type: String,
-    require: true
-  },
   riskLevel: {
     type: String,
     enum: ['low', 'medium', 'high']
@@ -96,6 +92,7 @@ const vaultSchema = {
     enum: ['active', 'closed', 'hold']
   },
   tvl: { type: Number, default: 0 },
+  staked: { type: Number, default: 0 },
   displayPic: {
     path: {
       type: String,
@@ -221,6 +218,37 @@ ProjectSchema.methods = {
       { $set: cleanedUpdates },
       { new: true, runValidators: true }
     )
+  },
+  getProjectWithoutPagination: async function () {
+    try {
+      const ProjectModel = mongoose.model('Project')
+      const data = await ProjectModel.find({ status: 'active' })
+      return data
+    } catch (error) {
+      throw error
+    }
+  },
+  updateStake: async function (args) {
+    try {
+      const { pId, vault, stakes, chain, tvl } = args
+      const ProjectModel = mongoose.model('Project')
+      await ProjectModel.findOneAndUpdate(
+        {
+          _id: pId,
+          'vaultInfo.vaultAddress': vault,
+          chain: chain
+        },
+        {
+          $set: {
+            'vaultInfo.$.staked': Number(stakes),
+            'vaultInfo.$.tvl': Number(tvl)
+          }
+        },
+        { new: true }
+      )
+    } catch (error) {
+      throw error
+    }
   }
 }
 
