@@ -1,28 +1,39 @@
 const { Agenda } = require('@hokify/agenda')
 require('dotenv').config()
+const mongoose = require('mongoose')
 
-const connectionOpts = {
-  db: { address: process.env.MONGO_CONN, collection: 'agendaJobs' }
-}
-
-const agenda = new Agenda(connectionOpts)
-
-const jobTypes = process.env.JOB_TYPES ? process.env.JOB_TYPES.split(',') : []
-
-jobTypes.forEach(type => {
-  require('./jobs/' + type)(agenda)
-  console.log('Loaded job type:', type)
-})
-
-if (jobTypes.length) {
-  agenda.start()
-  agenda.every('60 minutes', 'Update:StakeInfo', {
-    uId: 'CALLIN60'
+mongoose
+  .connect(process.env.MONGO_CONN, {
+    serverSelectionTimeoutMS: 30000
   })
-  console.log('Defined')
-}
+  .then(() => {
+    console.log('MongoDB connected')
+    const agenda = new Agenda({
+      db: { address: process.env.MONGO_CONN, collection: 'agendaJobs' },
+      ensureIndex: true,
+      defaultLockLifetime: 1000 * 60 * 3
+    })
+    const jobTypes = process.env.JOB_TYPES
+      ? process.env.JOB_TYPES.split(',')
+      : []
 
-async function main() {}
+    jobTypes.forEach(type => {
+      require('./jobs/' + type)(agenda)
+      console.log('Loaded job type:', type)
+    })
+    if (jobTypes.length) {
+      agenda.start()
+      agenda.every('15 minutes', 'Update:StakeInfo', {
+        uId: 'CALLIN60'
+      })
+
+      console.log('Defined')
+    }
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err)
+  })
+
 // Handle unhandled rejections globally
 process.on('unhandledRejection', error => {
   console.error('Unhandled Rejection:', error)
