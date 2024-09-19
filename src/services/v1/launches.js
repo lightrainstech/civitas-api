@@ -8,12 +8,13 @@ module.exports = async function (fastify, opts) {
       const jwt = request.headers?.authorization
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
       if (!authResult.valid) {
-        reply.error({ message: 'Failure' })
+        reply.error({ message: 'Failed to authenticate' })
+      } else {
+        request.log.info('Token Valid')
+        request.user = authResult.parsedJWT
       }
-      request.log.info('Token Valid')
-      request.user = authResult.parsedJWT
     } catch (err) {
-      console.log(err)
+      console.log('jwt err', err)
       reply.error(err)
     }
   })
