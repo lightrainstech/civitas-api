@@ -8,12 +8,13 @@ module.exports = async function (fastify, opts) {
       const jwt = request.headers?.authorization
       const authResult = await thirdwebAuth.verifyJWT({ jwt })
       if (!authResult.valid) {
-        reply.error({ message: 'Failure' })
+        reply.error({ message: 'Failed to authenticate' })
+      } else {
+        request.log.info('Token Valid')
+        request.user = authResult.parsedJWT
       }
-      request.log.info('Token Valid')
-      request.user = authResult.parsedJWT
     } catch (err) {
-      console.log(err)
+      console.log('jwt err', err)
       reply.error(err)
     }
   })
@@ -74,17 +75,17 @@ module.exports = async function (fastify, opts) {
   fastify.get('/projects', async function (request, reply) {
     try {
       const { user } = request
-
+      console.log('user')
       // Get projectData into the database
       const project = new Project()
       const savedProject = await project.getProjectsOwned(user.sub)
       reply.success({
-        message: 'Project created successfully',
+        message: 'Projects listed successfully',
         projects: savedProject
       })
     } catch (err) {
       reply.error({
-        message: 'Failed to create project',
+        message: 'Failed to list projects',
         error: err.message
       })
     }
