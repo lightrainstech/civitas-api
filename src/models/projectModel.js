@@ -229,6 +229,16 @@ ProjectSchema.methods = {
       throw error
     }
   },
+  updateProductLaunch: async function (filter, updateData) {
+    const ProjectModel = mongoose.model('Project')
+    try {
+      const options = { new: true }
+      return await ProjectModel.findOneAndUpdate(filter, updateData, options)
+    } catch (error) {
+      console.error('Error in upsert operation:', error)
+      throw error
+    }
+  },
   updateStake: async function (args) {
     try {
       const { pId, vault, stakes, chain, tvl } = args
