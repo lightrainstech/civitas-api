@@ -75,7 +75,6 @@ module.exports = async function (fastify, opts) {
   fastify.get('/projects', async function (request, reply) {
     try {
       const { user } = request
-      console.log('user')
       // Get projectData into the database
       const project = new Project()
       const savedProject = await project.getProjectsOwned(user.sub)
@@ -150,4 +149,23 @@ module.exports = async function (fastify, opts) {
         })
       }
     })
+
+  fastify.get('/projects/is_owner/:str', async function (request, reply) {
+    const { str } = request.params
+    const projectModel = new Project()
+    const { user } = request
+    try {
+      const owned = await projectModel.getIsOwned(str, user.sub)
+      reply.success({
+        message: owned.isLaunched
+          ? 'Project is already published'
+          : 'Project is not published',
+        available: owned ? true : false
+      })
+    } catch (error) {
+      console.log(error)
+      reply.error({ message: 'Failed to fetch' })
+    }
+    return reply
+  })
 }

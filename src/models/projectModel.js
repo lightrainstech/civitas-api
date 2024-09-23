@@ -239,6 +239,15 @@ ProjectSchema.methods = {
       throw error
     }
   },
+  getIsOwned: async function (projectId, owner) {
+    const ProjectModel = mongoose.model('Project')
+    try {
+      return await ProjectModel.findOne({ projectId, owner })
+    } catch (error) {
+      console.error('Error', error)
+      throw error
+    }
+  },
   updateStake: async function (args) {
     try {
       const { pId, vault, stakes, chain, tvl } = args
