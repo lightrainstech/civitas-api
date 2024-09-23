@@ -3,30 +3,40 @@ const Launch = require('@models/launchModel.js')
 const Project = require('@models/projectModel.js')
 
 module.exports = async function (fastify, opts) {
-  // fastify.addHook('onRequest', async (request, reply) => {
-  //   try {
-  //     const { thirdwebAuth } = fastify
-  //     const jwt = request.headers?.authorization
-  //     const authResult = await thirdwebAuth.verifyJWT({ jwt })
-  //     if (!authResult.valid) {
-  //       reply.error({ message: 'Failed to authenticate' })
-  //     } else {
-  //       request.log.info('Token Valid')
-  //       request.user = authResult.parsedJWT
-  //     }
-  //   } catch (err) {
-  //     console.log('jwt err', err)
-  //     reply.error(err)
-  //   }
-  // })
+  fastify.addHook('onRequest', async (request, reply) => {
+    try {
+      const { thirdwebAuth } = fastify
+      const jwt = request.headers?.authorization
+      const authResult = await thirdwebAuth.verifyJWT({ jwt })
+      if (!authResult.valid) {
+        reply.error({ message: 'Failed to authenticate' })
+      } else {
+        request.log.info('Token Valid')
+        request.user = authResult.parsedJWT
+      }
+    } catch (err) {
+      console.log('jwt err', err)
+      reply.error(err)
+    }
+  })
 
   fastify.post('/launches', async function (request, reply) {
     try {
+      const project = new Project()
+
       const data = request.body
       const { user } = request
       data.owner = user.sub
 
       const { projectId = null } = request.body
+
+      const owned = await project.getIsOwned(projectId, user.sub)
+
+      if (!owned) {
+        reply.error({
+          message: 'There is a conflict in choosen project name'
+        })
+      }
 
       // Recursive function to filter out empty or undefined fields
       function cleanData(input) {
@@ -59,7 +69,6 @@ module.exports = async function (fastify, opts) {
       const savedLaunch = await launch.save()
 
       if (savedLaunch && projectId) {
-        const project = new Project()
         await project.updateProductLaunch({ projectId }, { isLaunched: true })
         console.log('Launch status updated')
       }
