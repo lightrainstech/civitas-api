@@ -25,6 +25,7 @@
     "path": "^0.12.7",
     "thirdweb": "^5.50.0",
     "v8-compile-cache": "^2.4.0",
+    "web3": "^4.13.0",
     "yarn": "^1.22.22"
   },
   "scripts": {
