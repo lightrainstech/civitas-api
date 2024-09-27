@@ -269,6 +269,27 @@ ProjectSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  updateStakeByVault: async function (args) {
+    try {
+      const { vault, stakes, chain, tvl } = args
+      const ProjectModel = mongoose.model('Project')
+      await ProjectModel.findOneAndUpdate(
+        {
+          'vaultInfo.vaultAddress': vault,
+          chain: chain
+        },
+        {
+          $set: {
+            'vaultInfo.$.staked': Number(stakes),
+            'vaultInfo.$.tvl': Number(tvl)
+          }
+        },
+        { new: true }
+      )
+    } catch (error) {
+      throw error
+    }
   }
 }
 
