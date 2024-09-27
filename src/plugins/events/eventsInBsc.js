@@ -1,5 +1,6 @@
 'use strict'
 const Project = require('@models/projectModel.js')
+const Transaction = require('@models/transactionModel.js')
 require('dotenv').config()
 const fp = require('fastify-plugin')
 const { ethers } = require('ethers')
@@ -18,16 +19,8 @@ async function eventListenerForBsc(fastify, options) {
   )
   contractInstance.on(
     'VaultEvent',
-    async (vaultAddress, eventName, tvl, wallet, amount) => {
+    async (vaultAddress, eventName, tvl, wallet, amount, event) => {
       try {
-        console.log(
-          '---------Inside---------',
-          vaultAddress,
-          eventName,
-          tvl,
-          wallet,
-          amount
-        )
         let tvlValue = ethers.formatUnits(tvl, 18)
         const projectModel = new Project()
         const update = await projectModel.updateStakeByVault({
@@ -36,6 +29,17 @@ async function eventListenerForBsc(fastify, options) {
           chain: 'BSC',
           tvl: tvlValue
         })
+        if (eventName === 'deposit' || eventName === 'withdraw') {
+          const transactionModel = new Transaction()
+          await transactionModel.addRecord({
+            vault: vaultAddress,
+            amount: amount.toString(),
+            chain: 'BSC',
+            wallet: wallet,
+            transactionType: eventName,
+            transactionHash: event.log.transactionHash
+          })
+        }
       } catch (error) {
         console.log(error)
       }
