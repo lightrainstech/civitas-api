@@ -64,6 +64,63 @@ TransactionSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  getStakes: async function (args) {
+    try {
+      const { wallet } = args
+      const TransactionModel = mongoose.model('Transaction')
+      const result = await TransactionModel.aggregate([
+        {
+          $match: {
+            wallet: wallet
+          }
+        },
+        {
+          $group: {
+            _id: '$projectId',
+            totalAmount: {
+              $sum: {
+                $cond: [
+                  { $eq: ['$transactionType', 'deposit'] },
+                  { $toDouble: '$amount' },
+                  { $multiply: [-1, { $toDouble: '$amount' }] }
+                ]
+              }
+            },
+            wallet: { $first: '$wallet' },
+            vaultAddress: { $first: '$vaultAddress' }
+          }
+        },
+        {
+          $lookup: {
+            from: 'projects',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'projectInfo'
+          }
+        },
+        {
+          $unwind: {
+            path: '$projectInfo',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $project: {
+            wallet: 1,
+            totalAmount: 1,
+            vaultAddress: 1,
+            projectId: '$projectInfo._id',
+            projectName: '$projectInfo.name',
+            vaultInfo: '$projectInfo.vaultInfo'
+          }
+        }
+      ])
+
+      return result
+    } catch (error) {
+      throw error
+    }
   }
 }
 

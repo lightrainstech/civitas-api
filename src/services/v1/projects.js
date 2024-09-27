@@ -1,5 +1,7 @@
 'use strict'
+const Web3 = require('web3')
 const Project = require('@models/projectModel.js')
+const Transaction = require('@models/transactionModel.js')
 
 module.exports = async function (fastify, opts) {
   fastify.addHook('onRequest', async (request, reply) => {
@@ -167,5 +169,44 @@ module.exports = async function (fastify, opts) {
       reply.error({ message: 'Failed to fetch' })
     }
     return reply
-  })
+  }),
+    fastify.get('/projects/stakes', async function (request, reply) {
+      try {
+        const { user } = request
+
+        const transactionModel = new Transaction()
+        let savedProject = await transactionModel.getStakes({
+            wallet: Web3.utils.toChecksumAddress(user.sub)
+          }),
+          dataArray = []
+
+        for await (let item of savedProject) {
+          if (item._id) {
+            let obj = {}
+            const vaultAddress = Web3.utils.toChecksumAddress(item.vaultAddress)
+            const vault = item.vaultInfo.find(
+                v => v.vaultAddress === vaultAddress
+              ),
+              decimals = vault ? vault.depositTokenDecimals : 18
+            obj.wallet = item.wallet
+            obj.vaultAddress = item.vaultAddress
+            obj.totalAmount = Number(
+              Web3.utils.fromWei(item.totalAmount, decimals)
+            )
+            obj.projectId = item.projectId
+            obj.projectName = item.projectName
+            dataArray.push(obj)
+          }
+        }
+        reply.success({
+          message: 'Staked Projects',
+          projects: dataArray
+        })
+      } catch (err) {
+        reply.error({
+          message: 'Failed to list projects',
+          error: err.message
+        })
+      }
+    })
 }
