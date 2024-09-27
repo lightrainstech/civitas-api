@@ -2,7 +2,7 @@
 // External Dependencies
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
-
+const ObjectId = mongoose.Types.ObjectId
 const TransactionSchema = new mongoose.Schema(
   {
     wallet: {
@@ -21,6 +21,10 @@ const TransactionSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    projectId: {
+      type: ObjectId,
+      ref: 'Project'
+    },
     transactionHash: {
       type: String,
       unique: true
@@ -38,8 +42,15 @@ const TransactionSchema = new mongoose.Schema(
 TransactionSchema.methods = {
   addRecord: async function (args) {
     try {
-      const { vault, amount, chain, wallet, transactionType, transactionHash } =
-        args
+      const {
+        vault,
+        amount,
+        chain,
+        wallet,
+        transactionType,
+        transactionHash,
+        projectId
+      } = args
       const TransactionModel = mongoose.model('Transaction')
       let transaction = new TransactionModel()
       transaction.wallet = wallet
@@ -48,6 +59,7 @@ TransactionSchema.methods = {
       transaction.vaultAddress = vault
       transaction.transactionHash = transactionHash
       transaction.chain = chain
+      transaction.projectId = projectId
       await transaction.save()
     } catch (error) {
       throw error

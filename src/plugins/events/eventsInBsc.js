@@ -24,21 +24,28 @@ async function eventListenerForBsc(fastify, options) {
         let tvlValue = ethers.formatUnits(tvl, 18)
         const projectModel = new Project()
         const update = await projectModel.updateStakeByVault({
-          vault: vaultAddress,
+          vault: Web3.utils.toChecksumAddress(vaultAddress),
           stakes: tvlValue,
           chain: 'BSC',
           tvl: tvlValue
         })
+        let project = await projectModel.getProjectByVault({
+          vault: Web3.utils.toChecksumAddress(vaultAddress),
+          chain: 'BSC'
+        })
         if (eventName === 'deposit' || eventName === 'withdraw') {
-          const transactionModel = new Transaction()
-          await transactionModel.addRecord({
-            vault: vaultAddress,
-            amount: amount.toString(),
-            chain: 'BSC',
-            wallet: wallet,
-            transactionType: eventName,
-            transactionHash: event.log.transactionHash
-          })
+          if (project.length > 0) {
+            const transactionModel = new Transaction()
+            await transactionModel.addRecord({
+              vault: Web3.utils.toChecksumAddress(vaultAddress),
+              amount: amount.toString(),
+              chain: 'BSC',
+              wallet: Web3.utils.toChecksumAddress(wallet),
+              transactionType: eventName,
+              transactionHash: event.log.transactionHash,
+              projectId: project[0]._id
+            })
+          }
         }
       } catch (error) {
         console.log(error)
