@@ -107,7 +107,7 @@ TransactionSchema.methods = {
         },
         {
           $project: {
-            wallet: 1, // Rename _id to vaultAddress
+            wallet: 1,
             totalAmount: 1,
             vaultAddress: 1,
             projectId: '$projectInfo._id',
