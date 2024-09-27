@@ -290,6 +290,21 @@ ProjectSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  getProjectByVault: async function (args) {
+    try {
+      const { vault, chain } = args
+      const ProjectModel = mongoose.model('Project')
+      return await ProjectModel.find(
+        {
+          'vaultInfo.vaultAddress': vault,
+          chain: chain
+        },
+        { _id: 1 }
+      )
+    } catch (error) {
+      throw error
+    }
   }
 }
 
