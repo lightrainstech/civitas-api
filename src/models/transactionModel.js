@@ -112,7 +112,9 @@ TransactionSchema.methods = {
             vaultAddress: 1,
             projectId: '$projectInfo._id',
             projectName: '$projectInfo.name',
-            vaultInfo: '$projectInfo.vaultInfo'
+            vaultInfo: '$projectInfo.vaultInfo',
+            displayPic: '$projectInfo.displayPic',
+            status: '$projectInfo.status'
           }
         }
       ])
