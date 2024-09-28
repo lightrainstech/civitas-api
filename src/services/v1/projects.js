@@ -197,6 +197,7 @@ module.exports = async function (fastify, opts) {
             obj.projectId = item.projectId
             obj.projectName = item.projectName
             obj.displayPic = item.displayPic
+            obj.vaultDisplayPic = vault ? vault.displayPic : {}
             obj.tvl = vault ? vault.tvl : 0
             obj.status = item.status
             dataArray.push(obj)

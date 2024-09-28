@@ -110,7 +110,7 @@ TransactionSchema.methods = {
             wallet: 1,
             totalAmount: 1,
             vaultAddress: 1,
-            projectId: '$projectInfo._id',
+            projectId: '$projectInfo.projectId',
             projectName: '$projectInfo.name',
             vaultInfo: '$projectInfo.vaultInfo',
             displayPic: '$projectInfo.displayPic',
