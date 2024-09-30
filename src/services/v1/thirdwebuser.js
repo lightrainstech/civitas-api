@@ -68,7 +68,7 @@ module.exports = async function (fastify, opts) {
             .success({
               message: 'Sign up successful!',
               token: jwt,
-              newUsr: newUsr
+              newUsr: user || newUsr
             })
         } else {
           reply.error({ message: 'Signature missmatch!' })
