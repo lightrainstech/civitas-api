@@ -150,8 +150,8 @@ const ProjectSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      default: 'active',
-      enum: ['active', 'closed', 'hold']
+      default: 'waiting',
+      enum: ['waiting', 'active', 'closed', 'hold']
     },
     tokenInfo: tokenSchema,
     teamInfo: [teamSchema],
@@ -311,7 +311,8 @@ ProjectSchema.methods = {
 ProjectSchema.statics = {
   load: function (options, cb) {
     options.select =
-      options.select || 'name description chain category tvl startDate endDate '
+      options.select ||
+      'name description chain category tvl startDate endDate status'
     return this.findOne(options.criteria).select(options.select).exec(cb)
   },
 
