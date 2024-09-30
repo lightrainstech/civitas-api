@@ -69,7 +69,8 @@ UserSchema.methods = {
 
 UserSchema.statics = {
   load: function (options, cb) {
-    options.select = options.select || 'userIdRef wallet name isVerified'
+    options.select =
+      options.select || 'userIdRef wallet name isVerified profileImage'
     return this.findOne(options.criteria).select(options.select).exec(cb)
   },
 
