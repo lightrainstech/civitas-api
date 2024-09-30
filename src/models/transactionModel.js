@@ -77,7 +77,7 @@ TransactionSchema.methods = {
         },
         {
           $group: {
-            _id: '$projectId',
+            _id: '$vaultAddress',
             totalAmount: {
               $sum: {
                 $cond: [
@@ -88,13 +88,14 @@ TransactionSchema.methods = {
               }
             },
             wallet: { $first: '$wallet' },
-            vaultAddress: { $first: '$vaultAddress' }
+            vaultAddress: { $first: '$vaultAddress' },
+            projectId: { $first: '$projectId' }
           }
         },
         {
           $lookup: {
             from: 'projects',
-            localField: '_id',
+            localField: 'projectId',
             foreignField: '_id',
             as: 'projectInfo'
           }
