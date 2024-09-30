@@ -76,6 +76,11 @@ TransactionSchema.methods = {
           }
         },
         {
+          $match: {
+            projectId: { $exists: true, $ne: null }
+          }
+        },
+        {
           $group: {
             _id: '$vaultAddress',
             totalAmount: {
@@ -119,7 +124,6 @@ TransactionSchema.methods = {
           }
         }
       ])
-
       return result
     } catch (error) {
       throw error
