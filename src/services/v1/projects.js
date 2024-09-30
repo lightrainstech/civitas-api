@@ -31,6 +31,7 @@ module.exports = async function (fastify, opts) {
       data.userIdRef = user.nonce
       data.wallet = user.sub
       data.owner = user.sub
+      data.status = 'waiting'
 
       // Recursive function to filter out empty or undefined fields
       function cleanData(input) {
@@ -63,7 +64,7 @@ module.exports = async function (fastify, opts) {
       const savedProject = await project.save()
 
       reply.success({
-        message: 'Project created successfully',
+        message: 'Project created successfully. Please wait for approval',
         data: savedProject
       })
     } catch (err) {
