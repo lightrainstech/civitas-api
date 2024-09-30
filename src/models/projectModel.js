@@ -184,11 +184,14 @@ ProjectSchema.methods = {
         criteria: {},
         page: page || 0
       }
-
       options.criteria = {
         ...(searchTerm && { name: { $regex: searchTerm, $options: 'i' } }),
         ...(chain && { chain }),
         ...(category && { category })
+      }
+      options.criteria = {
+        ...options.criteria,
+        status: { $in: ['active', 'closed', 'hold'] }
       }
       const ProjectModel = mongoose.model('Project')
       return await ProjectModel.list(options)
