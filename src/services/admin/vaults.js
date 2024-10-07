@@ -15,7 +15,6 @@ module.exports = async function (fastify, opts) {
         request.log.info('Token Valid')
         const currentUser = authResult.parsedJWT
         const { sub } = currentUser
-        console.log(sub)
         if (!isAdminWallet(sub)) {
           reply.error({ message: 'You are not authorized to access this page' })
         }
@@ -66,30 +65,6 @@ module.exports = async function (fastify, opts) {
     } catch (err) {
       reply.error({
         message: 'Failed to add vault',
-        error: err.message
-      })
-    }
-  })
-  fastify.patch('/projects/status', async function (request, reply) {
-    try {
-      const { projectId, status } = request.body
-      const updatedProject = await Project.findOneAndUpdate(
-        { projectId },
-        { $set: { status } },
-        { new: true } // Return the updated document
-      )
-
-      if (!updatedProject) {
-        return reply.error({ message: 'Project not found' })
-      }
-
-      reply.success({
-        message: 'Project status updated successfully',
-        data: updatedProject
-      })
-    } catch (err) {
-      reply.error({
-        message: 'Failed to update',
         error: err.message
       })
     }
