@@ -1,14 +1,28 @@
 'use strict'
 const Project = require('@models/projectModel.js')
 require('dotenv').config()
+const { isAdminWallet } = require('@utils/index.js')
 
 module.exports = async function (fastify, opts) {
   fastify.addHook('onRequest', async (request, reply) => {
-    if (
-      !request.headers['x-admin-key'] ||
-      request.headers['x-admin-key'] !== process.env.ADMIN_AUTH_KEY
-    ) {
-      reply.error({ message: 'Failed to authenticate' })
+    try {
+      const { thirdwebAuth } = fastify
+      const jwt = request.headers?.authorization
+      const authResult = await thirdwebAuth.verifyJWT({ jwt })
+      if (!authResult.valid) {
+        reply.error({ message: 'Failed to authenticate' })
+      } else {
+        request.log.info('Token Valid')
+        const currentUser = authResult.parsedJWT
+        const { sub } = currentUser
+        console.log(sub)
+        if (!isAdminWallet(sub)) {
+          reply.error({ message: 'You are not authorized to access this page' })
+        }
+      }
+    } catch (err) {
+      console.log('jwt err', err)
+      reply.error(err)
     }
   })
 
