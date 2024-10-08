@@ -88,8 +88,8 @@ const vaultSchema = {
   },
   status: {
     type: String,
-    default: 'active',
-    enum: ['active', 'closed', 'hold']
+    default: ['waiting'],
+    enum: ['waiting', 'active', 'closed', 'hold']
   },
   tvl: { type: Number, default: 0 },
   staked: { type: Number, default: 0 },
@@ -305,6 +305,16 @@ ProjectSchema.methods = {
         },
         { _id: 1 }
       )
+    } catch (error) {
+      throw error
+    }
+  },
+  getAllProjectsAdmin: async function (status) {
+    const ProjectModel = mongoose.model('Project')
+    try {
+      return await ProjectModel.find({
+        status: { $in: status }
+      })
     } catch (error) {
       throw error
     }

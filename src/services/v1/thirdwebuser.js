@@ -2,7 +2,7 @@
 require('dotenv').config()
 
 const User = require('@models/userModel.js')
-const userPayload = require('@payloads/userPayload.js')
+const { isAdminWallet } = require('@utils/index.js')
 
 module.exports = async function (fastify, opts) {
   fastify.post('/login/connect', async function (request, reply) {
@@ -10,8 +10,6 @@ module.exports = async function (fastify, opts) {
 
     const { address, chainId } = request.body
     // const user = await userModal.getUserByEmail(address)
-
-    console.log(request.body)
 
     if (!address) {
       return res.status(400).send('Address is required')
@@ -44,7 +42,7 @@ module.exports = async function (fastify, opts) {
       try {
         const verifiedPayload = await thirdwebAuth.verifyPayload(request.body)
         const user = await userModal.getUserByWalet(payload.address)
-
+        const isAdmin = isAdminWallet(user.wallet)
         let newUsr = {}
         if (user === null) {
           newUsr = await User.create({
@@ -68,7 +66,8 @@ module.exports = async function (fastify, opts) {
             .success({
               message: 'Sign up successful!',
               token: jwt,
-              newUsr: user || newUsr
+              newUsr: user || newUsr,
+              isAdmin: isAdmin || false
             })
         } else {
           reply.error({ message: 'Signature missmatch!' })

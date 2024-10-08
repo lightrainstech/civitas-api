@@ -28,6 +28,15 @@ const saveToS3 = async args => {
   }
 }
 
+const isAdminWallet = wallet => {
+  const commaSeparatedStr = process.env.ADMIN_WALLETS
+  return commaSeparatedStr
+    .split(',')
+    .map(item => item.trim())
+    .includes(wallet)
+}
+
 module.exports = {
-  saveToS3
+  saveToS3,
+  isAdminWallet
 }
