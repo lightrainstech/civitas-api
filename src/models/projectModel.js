@@ -88,7 +88,7 @@ const vaultSchema = {
   },
   status: {
     type: String,
-    default: ['waiting'],
+    default: 'waiting',
     enum: ['waiting', 'active', 'closed', 'hold']
   },
   tvl: { type: Number, default: 0 },
