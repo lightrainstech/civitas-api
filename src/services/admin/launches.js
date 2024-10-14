@@ -29,14 +29,13 @@ module.exports = async function (fastify, opts) {
         const { status } = request.body
         const launchModel = new Launch()
         const launchList = await launchModel.getAllLaunchesAdmin(status)
-        if (!projectsList) {
-          return reply.error({ message: 'No project matching status' })
+        if (!launchList) {
+          return reply.error({ message: 'No launches matching status' })
         }
         reply.success({
-          data: projectsList
+          data: launchList
         })
       } catch (err) {
-        console.log(err)
         reply.error({
           message: 'Unknown error',
           error: err.message
