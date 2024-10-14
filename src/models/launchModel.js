@@ -124,6 +124,16 @@ LaunchSchema.methods = {
     } catch (error) {
       throw error
     }
+  },
+  getAllLaunchesAdmin: async function (status) {
+    const LaunchModel = mongoose.model('Launch')
+    try {
+      return await LaunchModel.find({
+        status: { $in: status }
+      })
+    } catch (error) {
+      throw error
+    }
   }
 }
 
