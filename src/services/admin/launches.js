@@ -26,7 +26,7 @@ module.exports = async function (fastify, opts) {
   }),
     fastify.post('/launches/list', async function (request, reply) {
       try {
-        const { status = ['upcoming'] } = request.body
+        const { status } = request.body
         const launchModel = new Launch()
         const launchList = await launchModel.getAllLaunchesAdmin(status)
         if (!projectsList) {
