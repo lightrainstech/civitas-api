@@ -27,11 +27,11 @@ const LaunchSchema = new mongoose.Schema(
     },
     tokenAddress: {
       type: String,
-      required: true
+      unique: true
     },
-    softCap: {
-      type: Number,
-      required: true
+    presaleAddress: {
+      type: String,
+      unique: true
     },
     hardCap: {
       type: Number,
@@ -72,6 +72,10 @@ const LaunchSchema = new mongoose.Schema(
     meta: {
       type: mongoose.Schema.Types.Mixed,
       default: {}
+    },
+    isApproved: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -131,6 +135,41 @@ LaunchSchema.methods = {
       return await LaunchModel.find({
         status: { $in: status }
       })
+    } catch (error) {
+      throw error
+    }
+  },
+  updatePresaleInfo: async function (args) {
+    try {
+      const { launchId, tokenAddress, presaleAddress } = args
+      const LaunchModel = mongoose.model('Launch')
+      return await LaunchModel.findOneAndUpdate(
+        { launchId },
+        {
+          $set: {
+            tokenAddress: tokenAddress,
+            presaleAddress: presaleAddress
+          }
+        },
+        { new: true }
+      )
+    } catch (error) {
+      throw error
+    }
+  },
+  approveLaunch: async function (args) {
+    try {
+      const { launchId, status } = args
+      const LaunchModel = mongoose.model('Launch')
+      return await LaunchModel.findOneAndUpdate(
+        { launchId },
+        {
+          $set: {
+            isApproved: status
+          }
+        },
+        { new: true }
+      )
     } catch (error) {
       throw error
     }
