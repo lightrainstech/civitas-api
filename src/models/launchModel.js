@@ -27,11 +27,11 @@ const LaunchSchema = new mongoose.Schema(
     },
     tokenAddress: {
       type: String,
-      unique: true
+      default: null
     },
     presaleAddress: {
       type: String,
-      unique: true
+      default: null
     },
     hardCap: {
       type: Number,
@@ -203,11 +203,21 @@ LaunchSchema.statics = {
   }
 }
 
-LaunchSchema.index({
-  launchId: 1,
-  startDate: 1,
-  endDate: 1
-})
+LaunchSchema.index(
+  {
+    launchId: 1,
+    startDate: 1,
+    endDate: 1
+  },
+  {
+    unique: true,
+    partialFilterExpression: { tokenAddress: { $type: 'string' } }
+  },
+  {
+    unique: true,
+    partialFilterExpression: { presaleAddress: { $type: 'string' } }
+  }
+)
 LaunchSchema.plugin(uniqueValidator)
 
 module.exports = mongoose.model('Launch', LaunchSchema)
