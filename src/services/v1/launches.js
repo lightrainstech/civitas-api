@@ -32,7 +32,7 @@ module.exports = async function (fastify, opts) {
 
       const owned = await project.getIsOwned(projectId, user.sub)
 
-      if (!owned) {
+      if (projectId && !owned) {
         reply.error({
           message: 'There is a conflict in choosen project name'
         })
