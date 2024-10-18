@@ -41,5 +41,49 @@ module.exports = async function (fastify, opts) {
           error: err.message
         })
       }
-    })
+    }),
+    fastify.patch('/launches/:launchId', async function (request, reply) {
+      try {
+        const { tokenAddress, presaleAddress } = request.body
+        const { launchId } = request.params
+        const launchModel = new Launch()
+        const launchData = await launchModel.updatePresaleInfo({
+          launchId,
+          tokenAddress,
+          presaleAddress
+        })
+        reply.success({
+          message: 'Updated successfully',
+          data: launchData
+        })
+      } catch (err) {
+        reply.error({
+          message: 'Unknown error',
+          error: err.message
+        })
+      }
+    }),
+    fastify.patch(
+      '/launches/:launchId/approve',
+      async function (request, reply) {
+        try {
+          const { status } = request.body
+          const { launchId } = request.params
+          const launchModel = new Launch()
+          const launchData = await launchModel.approveLaunch({
+            launchId,
+            status
+          })
+          reply.success({
+            message: 'Updated successfully',
+            data: launchData
+          })
+        } catch (err) {
+          reply.error({
+            message: 'Unknown error',
+            error: err.message
+          })
+        }
+      }
+    )
 }
