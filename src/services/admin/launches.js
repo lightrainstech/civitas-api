@@ -74,8 +74,6 @@ module.exports = async function (fastify, opts) {
       async function (request, reply) {
         try {
           const {
-            name,
-            symbol,
             totalSupply,
             presaleAddress,
             marketMakingAddress,
