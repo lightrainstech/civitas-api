@@ -37,7 +37,9 @@ module.exports = async function (agenda) {
 
       await launchModel.updateLaunch(launchId, {
         tokenAddress,
-        presaleAddress: presaleAddress
+        presaleAddress: presaleAddress,
+        status: 'active',
+        isApproved: true
       })
       console.log(
         `Addresses for ${launchId}: ${tokenAddress}, ${presaleAddress}`

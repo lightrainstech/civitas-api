@@ -84,10 +84,7 @@ module.exports = async function (fastify, opts) {
           } = request.body
           const { launchId } = request.params
           const launchModel = new Launch()
-          const launchData = await launchModel.approveLaunch({
-            launchId,
-            status
-          })
+          const launchData = await launchModel.getLauchDetails(launchId)
 
           if (launchData) {
             // Project is approved
@@ -102,7 +99,7 @@ module.exports = async function (fastify, opts) {
                 marketMakingAddress,
                 idoAddress
               },
-              chain: 'ETH',
+              chain: launchData.chain,
               launchId,
               hardCap: launchData.hardCap,
               startTime: Math.floor(
