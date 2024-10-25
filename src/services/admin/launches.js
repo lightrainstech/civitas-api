@@ -1,47 +1,51 @@
 'use strict'
+require('dotenv').config()
 const Launch = require('@models/launchModel.js')
 const { isAdminWallet } = require('@utils/index.js')
-require('dotenv').config()
+const { ethers } = require('ethers')
+const erc20FactoryAbi = require('@abis/erc20FactoryAbi.json')
+const { createERC20Token } = require('@utils/contractUtils')
+const OWNER_WALLET = process.env.DEPLOYER_WALLET_ADDR
 
 module.exports = async function (fastify, opts) {
-  fastify.addHook('onRequest', async (request, reply) => {
+  // fastify.addHook('onRequest', async (request, reply) => {
+  //   try {
+  //     const { thirdwebAuth } = fastify
+  //     const jwt = request.headers?.authorization
+  //     const authResult = await thirdwebAuth.verifyJWT({ jwt })
+  //     if (!authResult.valid) {
+  //       reply.error({ message: 'Failed to authenticate' })
+  //     } else {
+  //       request.log.info('Token Valid')
+  //       const currentUser = authResult.parsedJWT
+  //       const { sub } = currentUser
+  //       if (!isAdminWallet(sub)) {
+  //         reply.error({ message: 'You are not authorized to access this page' })
+  //       }
+  //     }
+  //   } catch (err) {
+  //     console.log('jwt err', err)
+  //     reply.error(err)
+  //   }
+  // }),
+  fastify.post('/launches/list', async function (request, reply) {
     try {
-      const { thirdwebAuth } = fastify
-      const jwt = request.headers?.authorization
-      const authResult = await thirdwebAuth.verifyJWT({ jwt })
-      if (!authResult.valid) {
-        reply.error({ message: 'Failed to authenticate' })
-      } else {
-        request.log.info('Token Valid')
-        const currentUser = authResult.parsedJWT
-        const { sub } = currentUser
-        if (!isAdminWallet(sub)) {
-          reply.error({ message: 'You are not authorized to access this page' })
-        }
+      const { status } = request.body
+      const launchModel = new Launch()
+      const launchList = await launchModel.getAllLaunchesAdmin(status)
+      if (!launchList) {
+        return reply.error({ message: 'No launches matching status' })
       }
+      reply.success({
+        data: launchList
+      })
     } catch (err) {
-      console.log('jwt err', err)
-      reply.error(err)
+      reply.error({
+        message: 'Unknown error',
+        error: err.message
+      })
     }
   }),
-    fastify.post('/launches/list', async function (request, reply) {
-      try {
-        const { status } = request.body
-        const launchModel = new Launch()
-        const launchList = await launchModel.getAllLaunchesAdmin(status)
-        if (!launchList) {
-          return reply.error({ message: 'No launches matching status' })
-        }
-        reply.success({
-          data: launchList
-        })
-      } catch (err) {
-        reply.error({
-          message: 'Unknown error',
-          error: err.message
-        })
-      }
-    }),
     fastify.patch('/launches/:launchId', async function (request, reply) {
       try {
         const { tokenAddress, presaleAddress } = request.body
@@ -67,13 +71,36 @@ module.exports = async function (fastify, opts) {
       '/launches/:launchId/approve',
       async function (request, reply) {
         try {
-          const { status } = request.body
+          const {
+            name,
+            symbol,
+            totalSupply,
+            presaleAddress,
+            marketMakingAddress,
+            idoAddress,
+            status
+          } = request.body
           const { launchId } = request.params
           const launchModel = new Launch()
           const launchData = await launchModel.approveLaunch({
             launchId,
             status
           })
+
+          if (launchData) {
+            // Project is approved
+            console.log(launchData)
+            await createERC20Token(
+              launchData.tokenName,
+              launchData.tokenSymbol,
+              OWNER_WALLET,
+              totalSupply,
+              presaleAddress,
+              marketMakingAddress,
+              idoAddress,
+              launchData.chain
+            )
+          }
           reply.success({
             message: 'Updated successfully',
             data: launchData
