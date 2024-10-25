@@ -22,6 +22,18 @@ const setProvider = chain => {
   return new ethers.JsonRpcProvider(process.env[provider])
 }
 
+const parseEventReceipt = (receipt, eventName, contract) => {
+  return receipt.logs
+    .map(log => {
+      try {
+        return contract.interface.parseLog(log)
+      } catch (e) {
+        return null
+      }
+    })
+    .find(decodedLog => decodedLog && decodedLog.name === eventName)
+}
+
 const fetchTotalStake = async args => {
   try {
     const { valutAddress, chain, tokenDecimal } = args
@@ -37,16 +49,6 @@ const fetchTotalStake = async args => {
 
 const createERC20Token = async (args, chain) => {
   try {
-    const {
-      name,
-      symbol,
-      owner,
-      totalSupply,
-      presaleAddress,
-      marketMakingAddress,
-      idoAddress
-    } = args
-
     const provider = setProvider(chain)
     const wallet = new ethers.Wallet(DEPLOYER_WALLET_PRIV, provider)
     const ercFactortInstance = new ethers.Contract(
@@ -55,28 +57,39 @@ const createERC20Token = async (args, chain) => {
       wallet
     )
 
-    const tx = await ercFactortInstance.createERC20Token(
-      name,
-      symbol,
-      owner,
-      totalSupply,
-      presaleAddress,
-      marketMakingAddress,
-      idoAddress
-    )
+    const tx = await ercFactortInstance.createERC20Token(...Object.values(args))
     const receipt = await tx.wait()
 
-    const receiptx = await ethers.getTransactionReceipt(receipt.hash)
+    const event = parseEventReceipt(receipt, 'TokenCreated', ercFactortInstance)
+    return event.args.tokenAddress
+  } catch (error) {
+    console.log(error)
+    throw error
+  }
+}
 
-    const iface = new ethers.Interface(erc20FactoryAbi)
-    let log = iface.parseLog(receiptx.logs[2])
-    console.log('log:', tx, log)
+const createPresale = async (args, chain) => {
+  try {
+    console.log(getAbiAddress(chain).preSale)
 
-    // const event = receipt.events.find(event => event.event === 'TokenCreated')
-    // console.log(event)
+    const provider = setProvider(chain)
+    const wallet = new ethers.Wallet(DEPLOYER_WALLET_PRIV, provider)
+    const ercPresaleInstance = new ethers.Contract(
+      getAbiAddress(chain).preSale,
+      presaleFactoryAbi,
+      wallet
+    )
 
-    // console.log(receipt)
-    return receipt
+    const tx = await ercPresaleInstance.createPresale(...Object.values(args))
+    const receipt = await tx.wait()
+
+    const event = parseEventReceipt(
+      receipt,
+      'PresaleCreated',
+      ercPresaleInstance
+    )
+
+    return event.args.presaleAddress
   } catch (error) {
     console.log(error)
     throw error
@@ -86,5 +99,6 @@ const createERC20Token = async (args, chain) => {
 module.exports = {
   fetchTotalStake,
   createERC20Token,
+  createPresale,
   getAbiAddress
 }

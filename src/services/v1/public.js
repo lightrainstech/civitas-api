@@ -5,6 +5,7 @@ const { pipeline } = require('stream')
 const fs = require('fs')
 const { saveToS3 } = require('@utils')
 const { createERC20Token } = require('@utils/contractUtils')
+const { createPresale } = require('../../utils/contractUtils')
 
 module.exports = async function (fastify, opts) {
   fastify.post('/projects/list', {}, async function (request, reply) {
@@ -146,6 +147,15 @@ module.exports = async function (fastify, opts) {
     )
   fastify.post('/test', async function (request, reply) {
     let c = await createERC20Token(request.body, 'ETH')
+    console.log(c)
+
+    return reply
+  })
+
+  fastify.post('/test-presale', async function (request, reply) {
+    let c = await createPresale(request.body, 'ETH')
+    console.log(c)
+
     return reply
   })
 }
