@@ -34,7 +34,7 @@ const LaunchSchema = new mongoose.Schema(
       default: null
     },
     hardCap: {
-      type: Number,
+      type: String,
       required: true
     },
     launchLogo: {
@@ -162,6 +162,7 @@ LaunchSchema.methods = {
       const { launchId, status } = args
       const LaunchModel = mongoose.model('Launch')
       return await LaunchModel.findOneAndUpdate(
+        // { launchId, isApproved: false },
         { launchId },
         {
           $set: {

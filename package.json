@@ -40,6 +40,7 @@
     "@payloads": "src/payload/",
     "@models": "src/models/",
     "@configs": "src/config/",
-    "@utils": "src/utils/"
+    "@utils": "src/utils/",
+    "@abis": "abi/"
   }
 }

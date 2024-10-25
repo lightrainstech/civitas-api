@@ -3,7 +3,9 @@ const Project = require('@models/projectModel.js')
 const Launch = require('@models/launchModel.js')
 const { pipeline } = require('stream')
 const fs = require('fs')
-const { saveToS3 } = require('../../utils')
+const { saveToS3 } = require('@utils')
+const { createERC20Token } = require('@utils/contractUtils')
+const { createPresale } = require('../../utils/contractUtils')
 
 module.exports = async function (fastify, opts) {
   fastify.post('/projects/list', {}, async function (request, reply) {
@@ -143,4 +145,22 @@ module.exports = async function (fastify, opts) {
         return reply
       }
     )
+  fastify.post('/test', async function (request, reply) {
+    // let c = await createERC20Token(request.body, 'ETH')
+    const { agenda } = fastify
+    await agenda.schedule('now', 'launch_token', {
+      args: request.body,
+      chain: 'ETH',
+      launchId: 'test-launch'
+    })
+
+    return reply
+  })
+
+  fastify.post('/test-presale', async function (request, reply) {
+    let c = await createPresale(request.body, 'ETH')
+    console.log(c)
+
+    return reply
+  })
 }
