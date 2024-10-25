@@ -19,7 +19,6 @@ module.exports = async function (agenda) {
         fundWallet
       } = job.attrs.data
       console.log(`launching token: ${launchId}`)
-      // const launch = await launchModel.getLauchDetails(launchId)
       let tokenAddress = await createERC20Token(args, chain)
 
       console.log(`launching presale: ${launchId}`)
@@ -35,16 +34,19 @@ module.exports = async function (agenda) {
         chain
       )
 
-      await launchModel.updateLaunch(launchId, {
-        tokenAddress,
-        presaleAddress: presaleAddress,
-        status: 'active',
-        isApproved: true
-      })
-      console.log(
-        `Addresses for ${launchId}: ${tokenAddress}, ${presaleAddress}`
-      )
-
+      if (presaleAddress && tokenAddress) {
+        await launchModel.updateLaunch(launchId, {
+          tokenAddress,
+          presaleAddress: presaleAddress,
+          status: 'active',
+          isApproved: true
+        })
+        console.log(
+          `Addresses for ${launchId}: ${tokenAddress}, ${presaleAddress}`
+        )
+      } else {
+        console.log(`Failed to deploy contracts`)
+      }
       done()
     } catch (e) {
       console.log('error launching')
