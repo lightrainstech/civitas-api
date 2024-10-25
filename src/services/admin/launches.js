@@ -8,26 +8,26 @@ const { createERC20Token } = require('@utils/contractUtils')
 const OWNER_WALLET = process.env.DEPLOYER_WALLET_ADDR
 
 module.exports = async function (fastify, opts) {
-  // fastify.addHook('onRequest', async (request, reply) => {
-  //   try {
-  //     const { thirdwebAuth } = fastify
-  //     const jwt = request.headers?.authorization
-  //     const authResult = await thirdwebAuth.verifyJWT({ jwt })
-  //     if (!authResult.valid) {
-  //       reply.error({ message: 'Failed to authenticate' })
-  //     } else {
-  //       request.log.info('Token Valid')
-  //       const currentUser = authResult.parsedJWT
-  //       const { sub } = currentUser
-  //       if (!isAdminWallet(sub)) {
-  //         reply.error({ message: 'You are not authorized to access this page' })
-  //       }
-  //     }
-  //   } catch (err) {
-  //     console.log('jwt err', err)
-  //     reply.error(err)
-  //   }
-  // }),
+  fastify.addHook('onRequest', async (request, reply) => {
+    try {
+      const { thirdwebAuth } = fastify
+      const jwt = request.headers?.authorization
+      const authResult = await thirdwebAuth.verifyJWT({ jwt })
+      if (!authResult.valid) {
+        reply.error({ message: 'Failed to authenticate' })
+      } else {
+        request.log.info('Token Valid')
+        const currentUser = authResult.parsedJWT
+        const { sub } = currentUser
+        if (!isAdminWallet(sub)) {
+          reply.error({ message: 'You are not authorized to access this page' })
+        }
+      }
+    } catch (err) {
+      console.log('jwt err', err)
+      reply.error(err)
+    }
+  })
   fastify.post('/launches/list', async function (request, reply) {
     try {
       const { status } = request.body
