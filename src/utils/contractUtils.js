@@ -40,7 +40,6 @@ const fetchTotalStake = async args => {
     const provider = setProvider(chain)
     const vaultInstance = new ethers.Contract(valutAddress, vaultAbi, provider)
     const stakes = await vaultInstance.queryTVL()
-    console.log(ethers.formatUnits(stakes, tokenDecimal))
     return ethers.formatUnits(stakes, tokenDecimal)
   } catch (error) {
     console.log(error)
@@ -70,8 +69,6 @@ const createERC20Token = async (args, chain) => {
 
 const createPresale = async (args, chain) => {
   try {
-    console.log(getAbiAddress(chain).preSale)
-
     const provider = setProvider(chain)
     const wallet = new ethers.Wallet(DEPLOYER_WALLET_PRIV, provider)
     const ercPresaleInstance = new ethers.Contract(

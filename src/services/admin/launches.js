@@ -40,6 +40,7 @@ module.exports = async function (fastify, opts) {
         data: launchList
       })
     } catch (err) {
+      console.log(err)
       reply.error({
         message: 'Unknown error',
         error: err.message
@@ -61,6 +62,7 @@ module.exports = async function (fastify, opts) {
           data: launchData
         })
       } catch (err) {
+        console.log(err)
         reply.error({
           message: 'Unknown error',
           error: err.message
@@ -78,6 +80,8 @@ module.exports = async function (fastify, opts) {
             presaleAddress,
             marketMakingAddress,
             idoAddress,
+            fundWallet,
+            tokenPrice,
             status
           } = request.body
           const { launchId } = request.params
@@ -89,23 +93,35 @@ module.exports = async function (fastify, opts) {
 
           if (launchData) {
             // Project is approved
-            console.log(launchData)
-            await createERC20Token(
-              launchData.tokenName,
-              launchData.tokenSymbol,
-              OWNER_WALLET,
-              totalSupply,
-              presaleAddress,
-              marketMakingAddress,
-              idoAddress,
-              launchData.chain
-            )
+            const { agenda } = fastify
+            await agenda.schedule('now', 'launch_token', {
+              args: {
+                name: launchData.name,
+                symbol: launchData.tokenSymbol,
+                owner: process.env.DEPLOYER_WALLET_ADDR,
+                totalSupply,
+                presaleAddress,
+                marketMakingAddress,
+                idoAddress
+              },
+              chain: 'ETH',
+              launchId,
+              hardCap: launchData.hardCap,
+              startTime: Math.floor(
+                new Date(launchData.startDate).getTime() / 1000
+              ),
+              endTime: Math.floor(
+                new Date(launchData.endDate).getTime() / 1000
+              ),
+              tokenPrice,
+              fundWallet
+            })
           }
           reply.success({
-            message: 'Updated successfully',
-            data: launchData
+            message: 'Started deploying contracts'
           })
         } catch (err) {
+          console.log(err)
           reply.error({
             message: 'Unknown error',
             error: err.message

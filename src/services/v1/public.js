@@ -146,8 +146,13 @@ module.exports = async function (fastify, opts) {
       }
     )
   fastify.post('/test', async function (request, reply) {
-    let c = await createERC20Token(request.body, 'ETH')
-    console.log(c)
+    // let c = await createERC20Token(request.body, 'ETH')
+    const { agenda } = fastify
+    await agenda.schedule('now', 'launch_token', {
+      args: request.body,
+      chain: 'ETH',
+      launchId: 'test-launch'
+    })
 
     return reply
   })

@@ -26,8 +26,6 @@ mongoose
       agenda.every('15 minutes', 'Update:StakeInfo', {
         uId: 'CALLIN60'
       })
-
-      console.log('Defined')
     }
   })
   .catch(err => {

@@ -34,7 +34,7 @@ const LaunchSchema = new mongoose.Schema(
       default: null
     },
     hardCap: {
-      type: Number,
+      type: String,
       required: true
     },
     launchLogo: {
