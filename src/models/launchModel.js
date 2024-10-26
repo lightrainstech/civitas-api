@@ -32,7 +32,7 @@ const LaunchSchema = new mongoose.Schema(
     tokenPrice: {
       type: String,
       required: true
-    },t
+    },
     presaleAddress: {
       type: String,
       default: null
