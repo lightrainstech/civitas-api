@@ -29,6 +29,10 @@ const LaunchSchema = new mongoose.Schema(
       type: String,
       default: null
     },
+    tokenPrice: {
+      type: String,
+      required: true
+    },
     presaleAddress: {
       type: String,
       default: null
