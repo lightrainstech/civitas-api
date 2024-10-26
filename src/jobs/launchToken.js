@@ -38,6 +38,7 @@ module.exports = async function (agenda) {
         await launchModel.updateLaunch(launchId, {
           tokenAddress,
           presaleAddress: presaleAddress,
+          hardCap: hardCap,
           status: 'active',
           isApproved: true
         })

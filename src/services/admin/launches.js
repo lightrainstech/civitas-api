@@ -80,6 +80,7 @@ module.exports = async function (fastify, opts) {
             idoAddress,
             fundWallet,
             tokenPrice,
+            hardCap,
             status
           } = request.body
           const { launchId } = request.params
@@ -101,7 +102,7 @@ module.exports = async function (fastify, opts) {
               },
               chain: launchData.chain,
               launchId,
-              hardCap: launchData.hardCap,
+              hardCap: hardCap,
               startTime: Math.floor(
                 new Date(launchData.startDate).getTime() / 1000
               ),
