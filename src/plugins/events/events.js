@@ -6,17 +6,18 @@ const fp = require('fastify-plugin')
 const { ethers } = require('ethers')
 const fs = require('fs')
 const Web3 = require('web3')
-const provider = new ethers.JsonRpcProvider(process.env.BSC_RPC)
+const provider = new ethers.WebSocketProvider(process.env.RPC)
 
 async function eventListenerForBsc(fastify, options) {
   console.log('----------Listening-------')
   const abiJson = fs.readFileSync('abi/factoryContractAbi.json')
   const abi = JSON.parse(abiJson)
   const contractInstance = new ethers.Contract(
-    process.env.FACTORY_CONTRACT_BSC,
+    process.env.FACTORY_CONTRACT,
     abi,
     provider
   )
+  const chain = process.env.NETWORK === 'TEST' ? 'BSC' : 'BASE'
   contractInstance.on(
     'VaultEvent',
     async (vaultAddress, eventName, tvl, wallet, amount, event) => {
@@ -26,12 +27,12 @@ async function eventListenerForBsc(fastify, options) {
         const update = await projectModel.updateStakeByVault({
           vault: Web3.utils.toChecksumAddress(vaultAddress),
           stakes: tvlValue,
-          chain: 'BSC',
+          chain: chain,
           tvl: tvlValue
         })
         let project = await projectModel.getProjectByVault({
           vault: Web3.utils.toChecksumAddress(vaultAddress),
-          chain: 'BSC'
+          chain: chain
         })
         if (eventName === 'deposit' || eventName === 'withdraw') {
           if (project.length > 0) {
@@ -39,7 +40,7 @@ async function eventListenerForBsc(fastify, options) {
             await transactionModel.addRecord({
               vault: Web3.utils.toChecksumAddress(vaultAddress),
               amount: amount.toString(),
-              chain: 'BSC',
+              chain: chain,
               wallet: Web3.utils.toChecksumAddress(wallet),
               transactionType: eventName,
               transactionHash: event.log.transactionHash,
