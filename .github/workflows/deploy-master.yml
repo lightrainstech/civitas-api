@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to EC2 on master branch push
+    name: Deploy to servers on master branch push
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,14 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           ARGS: '--delete'
           TARGET: ${{ secrets.TARGET_DIR }}
-
+      - name: Deploy to EC2 Testnet
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY_TST }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS_TST }}
+          REMOTE_USER: ${{ secrets.USERNAME_TST }}
+          ARGS: '--delete'
+          TARGET: ${{ secrets.TARGET_DIR_TST }}
       - name: Restart Server
         uses: appleboy/ssh-action@master
         with:
@@ -32,6 +39,17 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ${{ secrets.TARGET_DIR }}
+            cp ../.env .env
+            yarn install
+            pm2 reload pm2.json --update-env
+      - name: Restart Testnet Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_DNS_TST }}
+          username: ${{ secrets.USERNAME_TST }}
+          key: ${{ secrets.EC2_SSH_KEY_TST }}
+          script: |
+            cd ${{ secrets.TARGET_DIR_TST }}
             cp ../.env .env
             yarn install
             pm2 reload pm2.json --update-env
