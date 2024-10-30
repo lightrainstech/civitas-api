@@ -2,6 +2,7 @@
 const Project = require('@models/projectModel.js')
 require('dotenv').config()
 const { isAdminWallet } = require('@utils/index.js')
+const { createVault } = require('@utils/contractUtils.js')
 
 module.exports = async function (fastify, opts) {
   fastify.addHook('onRequest', async (request, reply) => {
@@ -45,8 +46,16 @@ module.exports = async function (fastify, opts) {
         return cleanedObject
       }
 
-      const cleanedVaultData = cleanData(vaultData) // Clean the input data
-
+      let cleanedVaultData = cleanData(vaultData) // Clean the input data
+      const vaultAddress = await createVault(
+        {
+          depositTokenAddress: vaultData.depositTokenAddress,
+          lpTokenName: vaultData.lpTokenName,
+          lpTokenSymbol: vaultData.lpTokenSymbol
+        },
+        vaultData.chain
+      )
+      cleanedVaultData.vaultAddress = vaultAddress
       // Find the project and push new vault data to vaultInfo array
       const updatedProject = await Project.findOneAndUpdate(
         { projectId },
