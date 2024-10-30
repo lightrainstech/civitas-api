@@ -3,6 +3,7 @@ const { ethers } = require('ethers')
 const vaultAbi = require('../../abi/vaultAbi.json')
 const erc20FactoryAbi = require('../../abi/erc20FactoryAbi.json')
 const presaleFactoryAbi = require('../../abi/presaleFactoryAbi.json')
+const factoryContractAbi = require('../../abi/factoryContractAbi.json')
 const DEPLOYER_WALLET_PRIV = process.env.DEPLOYER_WALLET_PRIV
 
 const getAbiAddress = (chain, isLive = false) => {
@@ -15,11 +16,14 @@ const getAbiAddress = (chain, isLive = false) => {
 }
 
 const setProvider = chain => {
-  let provider = 'BSC_RPC'
-  if (chain === 'ETH') {
-    provider = 'ETH_RPC'
-  }
-  return new ethers.JsonRpcProvider(process.env[provider])
+  let provider = 'RPC'
+  // if (chain === 'ETH') {
+  //   provider = 'ETH_RPC'
+  // }
+  // if (chain === 'BASE') {
+  //   provider = 'BASE_RPC'
+  // }
+  return new ethers.WebSocketProvider(process.env[provider])
 }
 
 const parseEventReceipt = (receipt, eventName, contract) => {
@@ -93,9 +97,34 @@ const createPresale = async (args, chain) => {
   }
 }
 
+const createVault = async (args, chain) => {
+  try {
+    const provider = setProvider(chain)
+    const wallet = new ethers.Wallet(DEPLOYER_WALLET_PRIV, provider)
+    const factoryContractInstance = new ethers.Contract(
+      process.env.FACTORY_CONTRACT,
+      factoryContractAbi,
+      wallet
+    )
+    const tx = await factoryContractInstance.createVault(...Object.values(args))
+    const receipt = await tx.wait()
+
+    const event = parseEventReceipt(
+      receipt,
+      'VaultCreated',
+      factoryContractInstance
+    )
+    console.log('VaultCreated', event)
+    return event.args.vaultAddress
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   fetchTotalStake,
   createERC20Token,
   createPresale,
-  getAbiAddress
+  getAbiAddress,
+  createVault
 }
