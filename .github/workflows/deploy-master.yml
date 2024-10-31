@@ -1,6 +1,5 @@
 name: Deploy to Prod
 
-# Trigger deployment only on push to master branch
 on:
   push:
     branches:
@@ -23,17 +22,20 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           ARGS: '--delete'
           TARGET: ${{ secrets.TARGET_DIR }}
+
       - name: Restart Server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1 # Specify the latest stable version
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
             cd ${{ secrets.TARGET_DIR }}
             cp ../.env .env
             yarn install
             pm2 reload pm2.json --update-env
+
       - name: Deploy to EC2 Testnet
         uses: easingthemes/ssh-deploy@main
         env:
@@ -42,13 +44,15 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME_TST }}
           ARGS: '--delete'
           TARGET: ${{ secrets.TARGET_DIR_TST }}
+
       - name: Restart Testnet Server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1
         with:
           host: ${{ secrets.HOST_DNS_TST }}
           username: ${{ secrets.USERNAME_TST }}
           key: ${{ secrets.EC2_SSH_KEY_TST }}
           script: |
+            set -e
             cd ${{ secrets.TARGET_DIR_TST }}
             cp ../.env .env
             yarn install
