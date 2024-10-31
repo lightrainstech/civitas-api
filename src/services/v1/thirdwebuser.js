@@ -42,7 +42,7 @@ module.exports = async function (fastify, opts) {
       try {
         const verifiedPayload = await thirdwebAuth.verifyPayload(request.body)
         const user = await userModal.getUserByWalet(payload.address)
-        const isAdmin = isAdminWallet(user.wallet)
+        const isAdmin = isAdminWallet(user?.wallet)
         let newUsr = {}
         if (user === null) {
           newUsr = await User.create({
