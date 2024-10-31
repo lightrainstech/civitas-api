@@ -24,7 +24,7 @@ jobs:
           TARGET: ${{ secrets.TARGET_DIR }}
 
       - name: Restart Server
-        uses: appleboy/ssh-action@v0.1 # Specify the latest stable version
+        uses: appleboy/ssh-action@v1.1.0 # Specify the latest stable version
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
@@ -46,7 +46,7 @@ jobs:
           TARGET: ${{ secrets.TARGET_DIR_TST }}
 
       - name: Restart Testnet Server
-        uses: appleboy/ssh-action@v0.1
+        uses: appleboy/ssh-action@v1.1.0
         with:
           host: ${{ secrets.HOST_DNS_TST }}
           username: ${{ secrets.USERNAME_TST }}
