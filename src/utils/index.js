@@ -12,11 +12,11 @@ const s3 = new S3Client({
 
 const saveToS3 = async args => {
   try {
-    const { file, name, filetype, project } = args
+    const { file, name, filetype } = args
     const readableStreamForFile = fs.createReadStream(file)
     const uploadParams = {
       Bucket: 'smooth-dao-assets',
-      Key: `${project}/${filetype}/${name}`,
+      Key: `${filetype}/${name}`,
       Body: readableStreamForFile,
       ACL: `public-read`,
       ContentType: 'image/png'
