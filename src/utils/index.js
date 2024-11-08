@@ -12,17 +12,17 @@ const s3 = new S3Client({
 
 const saveToS3 = async args => {
   try {
-    const { file, name, filetype, project } = args
+    const { file, name, filetype } = args
     const readableStreamForFile = fs.createReadStream(file)
     const uploadParams = {
-      Bucket: 'travelmate-s3',
-      Key: `${project}/${filetype}/${name}`,
+      Bucket: 'smooth-dao-assets',
+      Key: `${filetype}/${name}`,
       Body: readableStreamForFile,
       ACL: `public-read`,
       ContentType: 'image/png'
     }
     await s3.send(new PutObjectCommand(uploadParams))
-    return `https://${uploadParams.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${uploadParams.Key}`
+    return `https://d3i6jy4wk7u935.cloudfront.net/${uploadParams.Key}`
   } catch (e) {
     throw e
   }

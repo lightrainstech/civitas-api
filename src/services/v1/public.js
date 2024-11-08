@@ -28,11 +28,11 @@ module.exports = async function (fastify, opts) {
     return reply
   }),
     fastify.post(
-      '/projects/image/upload/:project/:fileType',
+      '/projects/image/upload/:fileType',
       {},
       async function (request, reply) {
         try {
-          let { fileType, project } = request.params
+          let { fileType } = request.params
           let formData = await request.file(),
             mimeType = formData.mimetype,
             fileName = formData.filename.replace(/[^a-zA-Z0-9.]/g, ''),
@@ -42,7 +42,6 @@ module.exports = async function (fastify, opts) {
               reply.error(err)
             }
             let imageUrl = await saveToS3({
-              project,
               file: filePath,
               name: `${Date.now()}-${fileName}`,
               filetype: fileType
